@@ -3,15 +3,16 @@ var express = require('express'),
 
 router.use('/home', require('./home'));
 router.use('/users',require('./users'));
+router.use('/login',require('./login'));
+router.use('/registration',require('./registration'));
 
-//Home page
-router.get('/login',function(req,res){
+//TEMPORARY GENERAL MANAGER REGISTER PAGE
+router.get('/register',function(req,res){
 
-  res.render('login',{
-    pageTitle: "Home",
-    siteName: res.locals.siteTitle
-  })
-
+    res.render('register',{
+        pageTitle: "Register",
+        siteName: res.locals.siteTitle
+    })
 });
 
 module.exports = router;

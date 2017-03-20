@@ -12,7 +12,7 @@ var accountController = require('../models/accountController'),
 
 router.use(function(req,res,next){
     if(!req.session || typeof req.session.user == 'undefined'){
-        res.redirect('/login');
+        res.redirect('/');
     }else{
         next();
     }

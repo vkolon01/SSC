@@ -9,6 +9,7 @@ var reload = require('reload');
 var expressSession = require('express-session');
 var port = 3000;
 var app = express();
+var expressValidator = require('express-validator');
 
 //database connection
 var mongoose = require('mongoose'),
@@ -24,6 +25,7 @@ app.set('view engine', 'ejs');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
+app.use(expressValidator());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
