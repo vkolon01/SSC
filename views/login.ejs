@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <% include ./template/head.ejs %>
+  </head>
+  <body>
+  <% include ./template/header.ejs %>
+    <h1><%= pageTitle %></h1>
+    <p>Please login to use the system</p>
+    <form action="/login/loginSubmit" method="post" class="submitForm">
+      <input id="username" type="text" autofocus="true" name="username"><br>
+      <input id="password" type="text" name="password"><br>
+
+      <button type="submit">login</button>
+    </form>
+  </body>
+</html>

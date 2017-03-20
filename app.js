@@ -41,7 +41,7 @@ app.use(require('./controllers'));
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
-  next(err);
+  next(res.redirect('/login'));
 });
 
 // error handler

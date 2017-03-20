@@ -5,13 +5,15 @@
 var mongoose = require('mongoose');
 
 var GMSchema = require('./staff/generalManager');
-var assistantManagerSchema = require('./staff/assistantManager');
-var receptionSchema = require('./staff/reception');
-var customerSchema = require('./customer');
+var AssistantManagerSchema = require('./staff/assistantManager');
+var ReceptionSchema = require('./staff/reception');
+var LoginData = require('./staff/reception');
+var CustomerSchema = require('./customer');
 
 module.exports = {
     generalManager: mongoose.model('general_manager', new GMSchema({})),
-    assistantManager: mongoose.model('assistant_manager', new assistantManagerSchema({})),
-    receptionist: mongoose.model('receptionist', new receptionSchema({})),
-    customer: mongoose.model('customer', new customerSchema({}))
+    assistantManager: mongoose.model('assistant_manager', new AssistantManagerSchema({})),
+    receptionist: mongoose.model('receptionist', new ReceptionSchema({})),
+    loginData: mongoose.model('login_data', new LoginData({})),
+    customer: mongoose.model('customer', new CustomerSchema({}))
 };
