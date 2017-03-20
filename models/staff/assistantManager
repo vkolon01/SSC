@@ -1,0 +1,19 @@
+var StaffBaseSchema = require('./staffBase');
+
+module.exports = function(paths){
+
+    var AssistantManagerSchema = new StaffBaseSchema({
+        monthly_salary:{
+            type: Number,
+            default: 0
+        },
+        role:{
+            type: String,
+            default: "Assistant_Manager"
+        }
+    });
+
+    AssistantManagerSchema.add(paths);
+
+    return AssistantManagerSchema;
+};
