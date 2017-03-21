@@ -1,15 +1,16 @@
 var express = require('express'),
     async = require('async'),
     router = express.Router(),
-    crypt = require('password-hash-and-salt');
+    crypt = require('password-hash-and-salt'),
+    mongoose = require('mongoose');
 
 //User models
 var accountController = require('../models/accountController'),
-    generalManager = accountController.generalManager({}),
-    assistantManager = accountController.assistantManager({}),
-    receptionist = accountController.receptionist({}),
-    loginData = accountController.loginData({}),
-    customer = accountController.customer({});
+    generalManagerModel = accountController.generalManager({}),
+    assistantManagerModel = accountController.assistantManager({}),
+    receptionistModel = accountController.receptionist({}),
+    loginDataModel = accountController.loginData({}),
+    customerModel = accountController.customer({});
 
 router.get('/',function(req,res){
 
@@ -36,7 +37,7 @@ router.post('/submit',function(req,res){
     //If the input is validated the user is saved.
 async.parallel([
     function(callback){
-        var loginDataSchema = loginData.Schema({
+        var loginData = new loginDataModel({
             username: username,
             hash:hash,
             role:"General_manager"
