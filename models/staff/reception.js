@@ -1,19 +1,20 @@
-var StaffBaseSchema = require('./staffBase');
+var StaffBaseSchema = require('./staffBase'),
+    mongoose = require('mongoose');
 
- module.exports = function(paths){
 
-     var ReceptionSchema = new StaffBaseSchema({
-         total_working_hours:{
-             type: Number,
-             default: 0
-         },
-         role:{
-             type: String,
-             default: "Receptionist"
-         }
-     });
+module.exports = function(paths){
 
-     ReceptionSchema.add(paths);
+    var ReceptionSchema = new StaffBaseSchema({
+        total_working_hours:{
+            type: Number,
+            default: 0
+        },
+        role:{
+            type: String,
+            default: "Receptionist"
+        }
+    });
 
-     return ReceptionSchema;
- };
+    ReceptionSchema.add(paths);
+     return mongoose.model('receptionist',ReceptionSchema);
+};

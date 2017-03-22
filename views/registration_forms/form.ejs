@@ -1,0 +1,14 @@
+<form action="/registration/submit" method="post" class="submitForm">
+    <select id="role" name="role">
+        <option value = "general_manager">General manager</option>
+        <option value = "assistant_manager">Assistant manager</option>
+        <option value = "receptionist">Receptionist</option>
+    </select>
+    <p>Full name: </p><input id="name" type="text" autofocus="true" name="name" required><br>
+    <p>Username: </p><input id="username" type="text" name="username" required><br>
+    <p>Password: </p><input id="password" type="password" name="password" required><br>
+    <p>Confirm password: </p><input id="password_confirm" type="password" name="passwordConfirm" required><br>
+    <p>Email address: </p><input id="email" type="email" name="email" required><br>
+    <p>Date of birth: </p><input id="date_of_birth" type="date" name="date_of_birth" required><br>
+    <button type="submit">Register</button>
+</form>

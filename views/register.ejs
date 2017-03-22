@@ -1,20 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <% include ./template/head.ejs %>
+    <% include template/head.ejs %>
   </head>
   <body>
-  <% include ./template/header.ejs %>
+  <% include template/header.ejs %>
     <h1><%= pageTitle %></h1>
-    <form action="/registration/submit" method="post" class="submitForm">
-      <p>Full name: </p><input id="name" type="text" autofocus="true" name="name" required><br>
-      <p>Username: </p><input id="username" type="text" name="username" required><br>
-      <p>Password: </p><input id="password" type="password" name="password" required><br>
-      <p>Confirm password: </p><input id="password_confirm" type="password" name="passwordConfirm" required><br>
-      <p>Email address: </p><input id="email" type="email" name="email" required><br>
-      <p>Date of birth: </p><input id="date_of_birth" type="date" name="date_of_birth" required><br>
-
-      <button type="submit">Register</button>
-    </form>
+    <p id="general_manager_form" style="display:none"><% include registration_forms/form.ejs%></p>
   </body>
 </html>

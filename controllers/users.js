@@ -3,13 +3,11 @@ var express = require('express'),
     crypt = require('password-hash-and-salt');
 
 //User models
-var accountController = require('../models/accountController'),
+/*var accountController = require('../models/accountController'),
     generalManager = accountController.generalManager({}),
     assistantManager = accountController.assistantManager({}),
-    receptionist = accountController.receptionist({}),
-    loginData = accountController.loginData({}),
     customer = accountController.customer({});
-
+*/
 router.use(function(req,res,next){
     if(!req.session || typeof req.session.user == 'undefined'){
         res.redirect('/');
@@ -27,6 +25,7 @@ router.get('/login',function(req,res){
 });
 */
 
+/*
 router.post('/loginSubmit', function(req,res){
     var username = req.body.username,
         password = req.body.password,
@@ -58,5 +57,5 @@ router.post('/loginSubmit', function(req,res){
         }
     });
 });
-
+*/
 module.exports = router;
