@@ -6,14 +6,6 @@ var express = require('express'),
 
 //User models
     var accountController = require('../models/accountController');
-    /*
-    generalManagerModel = accountController.generalManager({}),
-    assistantManagerModel = accountController.assistantManager({}),
-    receptionistModel = accountController.receptionist({}),
-    loginDataModel = accountController.loginData({}),
-    customerModel = accountController.customer({});
-*/
-    var models = accountController.models;
 router.get('/',function(req,res){
 
     res.render('register',{
@@ -40,29 +32,7 @@ router.post('/submit',function(req,res){
     }
 
     //If the input is validated the user is saved.
-    async.series([
-        function(callback){
-            account_id = accountController.createReceptionist(name,phone_number,date_of_birth);
-        },
-        function(callback){
-            var loginData = new models[0]({
-                username: username,
-                hash:hash,
-                role:role,
-                account_id: account_id
-            });
-            loginData.save(function(err,data){
-               console.log(data._id);
-            });
-        },
-        function(callback){
-
-        }
-    ],
-    function(err){
-        if(err) return next(err);
-    })
-
+    accountController.create_account(name,phone_number,date_of_birth,username,hash);
 
 });
 module.exports = router;

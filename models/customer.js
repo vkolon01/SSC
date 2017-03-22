@@ -1,4 +1,4 @@
-var BaseSchema = require('./individual');
+var BaseSchema = require('./account_info');
 
 module.exports = function(paths){
 
