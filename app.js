@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var config = require('./config');
 var reload = require('reload');
 var expressSession = require('express-session');
-var port = 3000;
+var port = 3001;
 var app = express();
 var expressValidator = require('express-validator');
 
@@ -25,8 +25,8 @@ app.set('view engine', 'ejs');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(expressValidator());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(expressValidator());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

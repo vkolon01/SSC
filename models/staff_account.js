@@ -11,13 +11,16 @@ var Account_Schema = new mongoose.Schema({
     account_info:[Account_Info]
 });
 Account_Model = mongoose.model('login_data', Account_Schema);
-exports.create_account = function(name,phone_number,date_of_birth,username,hash,role){
+
+exports.create_account = function(form){
+
     var account = new Account_Model({
-        name: name,
-        username: username,
-        hash: hash,
-        phone_number: phone_number,
-        date_of_birth: date_of_birth
+        name: form.name,
+        username: form.username,
+        hash: form.hash,
+        phone_number: form.phone_number,
+        date_of_birth: form.date_of_birth,
+        role: form.role
     });
     account.save(function(err){
         if(err) throw(err);

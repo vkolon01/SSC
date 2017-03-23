@@ -16,18 +16,3 @@ router.get('/register',function(req,res){
 });
 
 module.exports = router;
-
-/*
- generalManager.save(function(err){
- console.log('receptionist is saved');
- });
- assistantManager.save(function(err){
- console.log('receptionist is saved');
- });
- receptionist.save(function(err){
- console.log('receptionist is saved');
- });
- customer.save(function(err){
- console.log('receptionist is saved');
- });
- */
