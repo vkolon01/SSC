@@ -5,7 +5,8 @@
   </head>
   <body>
   <% include template/header.ejs %>
+  <% include template/errors.ejs %>
     <h1><%= pageTitle %></h1>
-    <p id="general_manager_form" style="display:none"><% include registration_forms/form.ejs%></p>
+  <% include registration_forms/form.ejs%>
   </body>
 </html>

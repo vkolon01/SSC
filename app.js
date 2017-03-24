@@ -6,14 +6,14 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var config = require('./config');
 var reload = require('reload');
-var expressSession = require('express-session');
+var session = require('express-session');
 var port = 3001;
 var app = express();
 var expressValidator = require('express-validator');
 
 //database connection
 var mongoose = require('mongoose'),
-    mongo_session = require('connect-mongo')(expressSession);
+    mongoBase = require('connect-mongo')(session);
 mongoose.connect('mongodb://localhost/SSC');
 
 
@@ -29,6 +29,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+  secret: '1245-FDDDD-FSdewfgf',
+  saveUninitialized: true,
+  resave: false,
+  store: new mongoBase({
+    mongooseConnection: mongoose.connection,
+    autoRemove: 'native'
+  }),
+  cookie: {maxAge: 180*60*1000} //2 hours
+}));
 
 //Common local attributes.
 app.use(function(req,res,next){

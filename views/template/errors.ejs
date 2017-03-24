@@ -1,0 +1,11 @@
+<ul id="errors">
+    <%if(typeof errors !== 'undefined'){
+        for(var i = 0; i < errors.length; i++){%>
+            <li>
+                <%if(errors[i]){%>
+                    <p> <%=errors[i] %></p>
+                <%}%>
+            </li>
+        <%}
+    }%>
+</ul>
