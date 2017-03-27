@@ -16,7 +16,7 @@ var Account_Info = new mongoose.Schema({
     email: {
         type: String,
         default: null
-    }
+    },
 });
 
 exports.account_data = function(){

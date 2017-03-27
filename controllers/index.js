@@ -1,18 +1,8 @@
 var express = require('express'),
     router = express.Router();
 
-router.use('/home', require('./home'));
-router.use('/users',require('./users'));
-router.use('/login',require('./login'));
-router.use('/registration',require('./registration'));
+router.use('/home', require('./app_routes/home'));
+router.use('/users',require('./app_routes/users'));
 
-//TEMPORARY GENERAL MANAGER REGISTER PAGE
-router.get('/register',function(req,res){
-
-    res.render('register',{
-        pageTitle: "Register",
-        siteName: res.locals.siteTitle
-    })
-});
 
 module.exports = router;

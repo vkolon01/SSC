@@ -7,15 +7,14 @@ var bodyParser = require('body-parser');
 var config = require('./config');
 var reload = require('reload');
 var session = require('express-session');
-var port = 3001;
+var port = 3000;
 var app = express();
-var expressValidator = require('express-validator');
+var validator = require('express-validator');
 
 //database connection
 var mongoose = require('mongoose'),
     mongoBase = require('connect-mongo')(session);
 mongoose.connect('mongodb://localhost/SSC');
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -26,7 +25,7 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(expressValidator());
+app.use(validator());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
@@ -40,14 +39,15 @@ app.use(session({
   cookie: {maxAge: 180*60*1000} //2 hours
 }));
 
-//Common local attributes.
-app.use(function(req,res,next){
-  res.locals.siteTitle = "SSC";
-  next();
-});
-
 //Routes
 app.use(require('./controllers'));
+//Registration and login routes are loaded separately to avoid permission handling middleware.
+app.use('/registration',require('./controllers/registration'));
+app.use('/login',require('./controllers/login'));
+
+//Common local attributes.
+app.locals.siteTitle = "SSC";
+app.use(express.static('app/public'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
