@@ -1,5 +1,5 @@
 <ul id="errors">
-    <%if(errors){
+    <%if(typeof errors !== 'undefined'){
         for(var i = 0; i < errors.length; i++){%>
             <li>
                 <%if(errors[i]){%>

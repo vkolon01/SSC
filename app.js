@@ -41,6 +41,7 @@ app.use(session({
 
 //Routes
 app.use(require('./controllers'));
+
 //Registration and login routes are loaded separately to avoid permission handling middleware.
 app.use('/registration',require('./controllers/registration'));
 app.use('/login',require('./controllers/login'));

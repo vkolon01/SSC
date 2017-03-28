@@ -12,8 +12,14 @@ router.use(function(req,res,next){
 router.get('/',function(req,res){
     res.render('index',{
         pageTitle: "Index",
-        siteName: res.locals.siteTitle
+        siteName: res.locals.siteTitle,
+        user: req.session.user
     })
+});
+
+router.get('/logOut',function(req,res){
+    req.session.destroy();
+    res.redirect('/');
 });
 
 module.exports = router;

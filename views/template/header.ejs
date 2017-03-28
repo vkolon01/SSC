@@ -1,14 +1,10 @@
 <a href="/" title="Index"><img src="/images/logo.jpg"></a>
 <ul id="header">
-    <li> <a href="/browse">Browse</a></li>
-    <%if(typeof username !=="undefined"){%><li><a href="<%='/users/'+userid%>"><%=username%></a></li><%}%>
-    <li><a href="/createBook" title="CreateBook">Create new book</a></li>
-    <!--<li><a href="/signUp" title="SignUp">Sign Up</a></li> -->
-    <li><%if(typeof loggedIn !== "undefined" && loggedIn){%>
-        <a href="/logOut" title="Log Out">LogOut</a>
-        <%}else{%>
-        <a href="/login" title="Login">Login</a>
+    <%if(typeof user !== "undefined" && user){%>
+        <li>Logged in as <%=user%></li>
+        <li><a href="/home/logOut" title="Log Out">LogOut</a></li>
+    <%}else{%>
+        <li><a href="/login" title="Login">Login</a></li>
         <%}%>
-    </li>
     <li></li>
 </ul>

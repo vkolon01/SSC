@@ -3,14 +3,13 @@ var express = require('express'),
     accountController = require('../models/accountController');
 
 router.use(function(req,res,next){
-    if(req.session && typeof req.session.user !== 'undefined'){
+    if(typeof req.session.user !== 'undefined'){
         res.redirect('/home');
     }else{
         next();
     }
 });
 
-//Home page
 router.get('/',function(req,res){
     res.render('login',{
         pageTitle: "Home",
