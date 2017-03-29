@@ -4,8 +4,16 @@
     <% include template/head.ejs %>
 </head>
 <body>
-<% include template/header.ejs %>
-<% include template/errors.ejs %>
- <p>Hello world</p>
+
+
+<div class="wrapper">
+ <% include template/header.ejs %>
+ <div class="main">
+  <% include template/sidebar.ejs %>
+  <p>Hello world</p>
+ </div>
+ <% include template/errors.ejs %>
+</div>
+
 </body>
 </html>

@@ -42,7 +42,7 @@ exports.login = function(form){
                 crypt(form.password).verifyAgainst(user.hash, function(err,match){
                     if(err) console.error(err);
                     if(match){
-                        fulfill(form.username)
+                        fulfill(user)
                     }else{
                         reject(['User data provided does not match the database'])
                     }

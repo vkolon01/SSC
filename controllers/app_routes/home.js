@@ -13,7 +13,8 @@ router.get('/',function(req,res){
     res.render('index',{
         pageTitle: "Index",
         siteName: res.locals.siteTitle,
-        user: req.session.user
+        user: req.session.user,
+        role: req.session.role
     })
 });
 

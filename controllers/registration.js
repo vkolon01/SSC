@@ -10,7 +10,8 @@ router.get('/',function(req,res){
         pageTitle: "Register",
         siteName: res.locals.siteTitle,
         errors: req.session.errors,
-        user: req.session.user
+        user: req.session.user,
+        role: req.session.role
     });
 });
 

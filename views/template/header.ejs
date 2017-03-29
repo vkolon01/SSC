@@ -1,6 +1,7 @@
 <a href="/" title="Index"><img src="/images/logo.jpg"></a>
 <ul id="header">
     <%if(typeof user !== "undefined" && user){%>
+        <li><%=role%></li>
         <li>Logged in as <%=user%></li>
         <li><a href="/home/logOut" title="Log Out">LogOut</a></li>
     <%}else{%>
