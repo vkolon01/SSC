@@ -1,11 +1,17 @@
 <a href="/" title="Index"><img src="/images/logo.jpg"></a>
-<ul id="header">
-    <%if(typeof user !== "undefined" && user){%>
-        <li><%=role%></li>
-        <li>Logged in as <%=user%></li>
-        <li><a href="/home/logOut" title="Log Out">LogOut</a></li>
-    <%}else{%>
+<ul class="header">
+    <li><%=role%></li>
+    <div class="dropdown">
+        <%if(typeof user !== "undefined" && user){%>
+
+        <li class="dropdown_button">  <%=user%>  </li>
+        <div class="dropdown_content">
+            <a href="/home/logOut" title="Log Out">LogOut</a>
+        </div>
+
+        <%}else{%>
         <li><a href="/login" title="Login">Login</a></li>
         <%}%>
-    <li></li>
+    </div>
+
 </ul>

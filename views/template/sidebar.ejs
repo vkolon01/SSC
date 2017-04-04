@@ -1,19 +1,29 @@
 <div class="sidebar_menu">
-    <a href="#">Link </a>
-    <a href="#">Link </a>
-    <div class="customers_menu">
-        <a class="dropdown_click" onclick="dropDown()">Customers</a>
-        <div id="customers_menu_content" class="customers_menu_content">
-            <a href = "#">Link</a>
-            <a href = "#">Link</a>
+    <%if(typeof user !== "undefined" && user){%>
+        <div class="dropdown">
+            <a href="#" class="dropdown_button"> <p><%=role%></p> <%=user%>  </a>
+            <div class="dropdown_content">
+                <a href="/home/logOut" title="Log Out">LogOut</a>
+            </div>
         </div>
-    </div>
-    <a href="#">Link</a>
-</div>
-<script>
-    function dropDown(){
-        var handle = document.getElementById("customers_menu_content");
-        if
-    }
+        <div class="dropdown">
+            <a href="/customers" class="dropdown_button">Customers</a>
+            <div class="dropdown_content">
+                <a href="/customers/registration">Register new Customer</a>
+                <a href="/customers/browse">Find Customer</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <a href="#" class="dropdown_button">Appointments</a>
+            <div class="dropdown_content">
+                <a href="#">Browse Appointments</a>
+                <a href="#">History Appointments</a>
+            </div>
+        </div>
+        <a href = "#">Link</a>
+        <a href = "#">Link</a>
 
-</script>
+    <%}else{%>
+        <a href="/login" title="Login">Login</a>
+    <%}%>
+</div>

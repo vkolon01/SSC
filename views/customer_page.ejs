@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include template/head.ejs %>
+</head>
+<body>
+<div class="container">
+    <% include template/errors.ejs %>
+    <% include template/sidebar.ejs %>
+    <div class="main_content">
+
+        <h3>Name: <%=customer_data.name%></h3>
+        <h4>ID: <%=customer_data.id%></h4>
+        <h4>Registered on <%=customer_data.registration_date%></h4>
+        <h4>Date of birth: <%=customer_data.date_of_birth%> (<%=customer_data.age%>)</h4>
+        <h4>Phone number: <%=customer_data.phone_number%></h4>
+        <h4>Email address: <%=customer_data.email%></h4>
+
+    </div>
+</div>
+</body>
+</html>

@@ -4,7 +4,11 @@ var mongoose = require('mongoose'),
     Account_Info = require('./account_info').account_data();
 
 var Account_Schema = new mongoose.Schema({
-    username: String,
+    username: {
+        type: String,
+        unique: true,
+        required: true
+    },
     hash: String,
     role:{
         type: String,
@@ -13,6 +17,8 @@ var Account_Schema = new mongoose.Schema({
     account_info: Account_Info
 });
 Account_Model = mongoose.model('login_data', Account_Schema);
+
+
 
 exports.create_account = function(form){
     return new Promise(function(fulfill,reject){

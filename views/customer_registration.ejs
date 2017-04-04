@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <% include template/head.ejs %>
+</head>
+<body>
+<div class="container">
+        <h1><%= pageTitle %></h1>
+        <% include template/errors.ejs %>
+        <% include template/sidebar.ejs %>
+    <div class="main_content">
+        <% include registration_forms/customer.ejs%>
+    </div>
+</div>
+
+
+</body>
+</html>

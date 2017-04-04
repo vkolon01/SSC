@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include template/head.ejs %>
+</head>
+<body>
+
+<div class="container">
+
+    <% include template/errors.ejs %>
+    <% include template/sidebar.ejs %>
+    <form action="/customers/search" method="post" class="submitForm">
+        Find by ID: <input id="id" type="text" autofocus="true" name="id"><br>
+        <button type="submit">Search</button>
+    </form>
+    <br><br>
+    <br><br>
+    <table id="browse_table">
+        <tr class="header">
+            <th style="width:33%;"><input type="text" id="filter_id" onkeyup="filterID()" placeholder="Filter by name.." title="Type customer name"><br><br>ID</th>
+            <th style="width:33%;"><input type="text" id="filter_name" onkeyup="filterName()" placeholder="Filter by name.." title="Type customer name"> <br><br>Name</th>
+            <th style="width:33%"><input type="text" id="filter_dob" onkeyup="filterDateOfBirth()" placeholder="Filter by date of birth.." title="Type customer date of birth"> <br><br>Date of birth</th>
+        </tr>
+        <%if(typeof customer_list !== 'undefined'){
+        customer_list.forEach(function(customer){ %>
+        <%if(typeof customer.id !=='undefined'){%>
+                <tr class="customer_url" data-href="<%='customers/'+customer.id%>">
+                    <td><%=customer.id%></td>
+                    <td><%=customer.name%></td>
+                    <td><%=customer.date_of_birth%></td>
+                </tr>
+        <% }});
+        }%>
+    </table>
+</div>
+<script>
+    /*
+    script for rows in a table
+     */
+    var elements = document.getElementsByClassName('customer_url');
+    for (var i = 0; i < elements.length; i++) {
+        var element = elements[i];
+        element.addEventListener('click', function() {
+            var href = this.dataset.href;
+            if (href) {
+                window.location.assign(href);
+            }
+        })
+    }
+
+    function filterName() {
+        var     td,
+                filter = document.getElementById("filter_name").value.toUpperCase(),
+                table = document.getElementById("browse_table"),
+                tr = table.getElementsByTagName("tr");
+        for (var i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+    function filterDateOfBirth() {
+        var     td,
+                filter = document.getElementById("filter_dob").value.toUpperCase(),
+                table = document.getElementById("browse_table"),
+                tr = table.getElementsByTagName("tr");
+        for (var i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[2];
+            if (td) {
+                if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+    function filterID() {
+        var     td,
+                filter = document.getElementById("filter_id").value.toUpperCase(),
+                table = document.getElementById("browse_table"),
+                tr = table.getElementsByTagName("tr");
+        for (var i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
+</body>
+</html>

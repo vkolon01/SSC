@@ -1,8 +1,9 @@
 var express = require('express'),
     router = express.Router();
 
+
 router.use(function(req,res,next){
-    if(!req.session || typeof req.session.user == 'undefined'){
+    if(!req.session || typeof req.session.user === 'undefined'){
         res.redirect('/login');
     }else{
         next();

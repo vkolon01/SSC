@@ -15,6 +15,7 @@ router.get('/',function(req,res){
     });
 });
 
+
 router.post('/submit',function(req,res){
     var form = {
         name : req.body.name,
@@ -27,7 +28,7 @@ router.post('/submit',function(req,res){
         password_confirm: req.body.password_confirm,
         hash: ''
     };
-    form_validation.validate_form(form).then(function(data){accountController.create_account(data).then(function(data){
+    form_validation.validate_staff_form(form).then(function(data){accountController.create_staff_account(data).then(function(data){
         res.redirect('/');
         },function(err){// Account creation error handling
             res.redirect('/registration');

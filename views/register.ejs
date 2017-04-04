@@ -4,9 +4,13 @@
     <% include template/head.ejs %>
   </head>
   <body>
-  <% include template/header.ejs %>
   <% include template/errors.ejs %>
+  <div class="container">
     <h1><%= pageTitle %></h1>
-  <% include registration_forms/form.ejs%>
+    <% include template/sidebar.ejs %>
+    <div class="main_content">
+      <% include registration_forms/form.ejs%>
+    </div>
+  </div>
   </body>
 </html>
