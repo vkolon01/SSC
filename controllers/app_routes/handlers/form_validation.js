@@ -27,6 +27,27 @@ exports.validate_customer_form = function(form) {
     });
 };
 
+exports.validate_phone_number = function(phone_number){
+
+    return new Promise(function(fulfill,reject){
+        if(validator.isInt(phone_number)) {
+            fulfill(phone_number);
+        }else {
+            reject('Please enter a valid UK phone number.')
+        }
+    });
+};
+exports.validate_email = function(email){
+
+    return new Promise(function(fulfill,reject){
+        if(validator.isEmail(email)) {
+            fulfill(email);
+        }else {
+            reject('Please enter a valid email address.')
+        }
+    });
+};
+
 exports.validate_staff_form = function(form){
     var errors = [];
     return new Promise(function (fulfill,reject){

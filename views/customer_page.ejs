@@ -8,15 +8,40 @@
     <% include template/errors.ejs %>
     <% include template/sidebar.ejs %>
     <div class="main_content">
+        <div class="account details">
+            <h3>Name: <%=customer_data.name%></h3>
 
-        <h3>Name: <%=customer_data.name%></h3>
-        <h4>ID: <%=customer_data.id%></h4>
-        <h4>Registered on <%=customer_data.registration_date%></h4>
-        <h4>Date of birth: <%=customer_data.date_of_birth%> (<%=customer_data.age%>)</h4>
-        <h4>Phone number: <%=customer_data.phone_number%></h4>
-        <h4>Email address: <%=customer_data.email%></h4>
+            <h4>ID: <%=customer_data.id%></h4>
+
+            <h4>Registered on <%=customer_data.registration_date%></h4>
+
+            <h4>Date of birth: <%=customer_data.date_of_birth%> (<%=customer_data.age%>)</h4>
+
+            <h4 id="phone_number">Phone number: <%=customer_data.phone_number%> <input type="button" onclick="change_phone_number()" value="edit"></h4>
+            <form id="edit_phone_number" style="display:none" action="/customers/edit/phone_number" method="post"><input name="phone_number" type="text" value="<%=customer_data.phone_number%>"><input type="hidden" name="customer_id" value="<%=customer_data.id%>"><button type="submit">Apply</button></form>
+
+            <h4 id="email_address">Email address: <%=customer_data.email%> <input type="button" onclick="change_email()" value="edit"></h4>
+            <form id="edit_email" style="display:none"  action="/customers/edit/email" method="post"><input name="email" type="email" value="<%=customer_data.email%>"><input type="hidden" name="customer_id" value="<%=customer_data.id%>"><button type="submit">Apply</button></form>
+        </div>
+        <div class="selections">
+            <button>Update account</button>
+            <input type="button" onclick="location.href='/';" value="Go to Google" />
+            <button>Delete account</button>
+        </div>
 
     </div>
 </div>
+
+<script>
+
+    function change_phone_number(){
+        document.getElementById("phone_number").style.display = "none";
+        document.getElementById("edit_phone_number").style.display = "";
+    }
+    function change_email(){
+        document.getElementById("email_address").style.display = "none";
+        document.getElementById("edit_email").style.display = "";
+    }
+</script>
 </body>
 </html>

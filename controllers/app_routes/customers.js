@@ -1,7 +1,7 @@
 var express = require('express'),
     router = express.Router(),
     accountController = require('../../models/accountController'),
-    form_validation = require('../app_routes/validation/form_validation'),
+    form_validation = require('./handlers/form_validation'),
     moment = require('moment');
 /*
 middleware to redirect any unregistered user back to login page
@@ -104,12 +104,50 @@ router.post('/registration/submit',function(req,res){
         res.redirect('/customers/'+data._id);
     },function(err){// Account creation error handling
         res.redirect('/customers/registration');
-        done(console.error(err));
+        console.error(err);
     });
-    },function(err){ // Form validation error handling
+    },function(err){ // Form handlers error handling
         req.session.errors = err;
         res.redirect('/customers/registration');
         done(console.error(err));
     });
+});
+router.post('/edit/phone_number',function(req,res){
+    var customer_id = req.body.customer_id,
+        phone_number = req.body.phone_number;
+    if(phone_number){
+        form_validation.validate_phone_number(phone_number).then(function(data){accountController.edit_customer_phone_number(data,customer_id).then(function(data){
+            console.log(data);
+            res.redirect('/customers/'+customer_id);
+        },function(err){
+            console.log(err);
+            //req.session.errors.push(err);
+            res.redirect('/customers/'+customer_id);
+        })},
+        function(err){
+            console.log(err);
+            //req.session.push(err);
+            res.redirect('/customers/'+customer_id);
+        })
+    }
+});
+router.post('/edit/email',function(req,res){
+    var customer_id = req.body.customer_id,
+        email = req.body.email;
+    if(email){
+        form_validation.validate_email(email).then(function(data){accountController.edit_customer_email(data,customer_id).then(function(data){
+                console.log(data);
+                res.redirect('/customers/'+customer_id);
+            },function(err){
+                console.log(err);
+                //req.session.errors.push(err);
+                res.redirect('/customers/'+customer_id);
+            })},
+            function(err){
+                console.log(err);
+                //req.session.push(err);
+                res.redirect('/customers/'+customer_id);
+            })
+    }
 });
 module.exports = router;

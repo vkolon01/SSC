@@ -1,7 +1,7 @@
 var express = require('express'),
     router = express.Router(),
     accountController = require('../models/accountController'),
-    form_validation = require('./app_routes/validation/form_validation');
+    form_validation = require('./app_routes/handlers/form_validation');
 
 
 router.get('/',function(req,res){
@@ -34,7 +34,7 @@ router.post('/submit',function(req,res){
             res.redirect('/registration');
             done(console.error(err));
         });
-    },function(err){ // Form validation error handling
+    },function(err){ // Form handlers error handling
             req.session.errors = err;
             res.redirect('/registration');
             done(console.error(err));
