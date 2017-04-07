@@ -2,7 +2,8 @@ var express = require('express'),
     router = express.Router(),
     accountController = require('../../models/accountController'),
     form_validation = require('./handlers/form_validation'),
-    moment = require('moment');
+    moment = require('moment'),
+    ac = require('./handlers/roles').ac;
 /*
 middleware to redirect any unregistered user back to login page
 */
@@ -26,6 +27,9 @@ router.get('/registration',function(req,res){
 });
 
 router.get('/:customer_id',function(req,res){
+
+    var permission = ac.can(req.session.role).readAny('customer');
+    if (permission.granted){
         accountController.find_customer(req.params.customer_id).then(function(data){
             var customer_data = {
                 name : data.account_info.name,
@@ -49,37 +53,49 @@ router.get('/:customer_id',function(req,res){
             req.session.errors.push(err);
             res.redirect('/home');
         });
+    }else{
+        res.status(403).end();
+    }
+
 });
 
 router.get('/',function(req,res){
-    accountController.get_all_customers().then(function(data) {
-        var customer_list = [{}];
+    var permission = ac.can(req.session.role).readAny('customer');
+    if(permission.granted){
+        accountController.get_all_customers().then(function(data) {
+            var customer_list = [{}];
 
-        data.forEach(function (customer) {
-            customer_list.push({
-                name: customer.account_info.name,
-                id: customer._id,
-                registration_date: moment(customer.registration_date).format('DD-MM-YYYY'),
-                date_of_birth: moment(customer.account_info.date_of_birth).format('DD-MM-YYYY'),
-                age: moment(moment(customer.account_info.date_of_birth).format("YYYY"), "YYYY").fromNow().replace('ago', 'old'),
-                phone_number: customer.account_info.phone_number,
-                email: customer.account_info.email
+            data.forEach(function (customer) {
+                customer_list.push({
+                    name: customer.account_info.name,
+                    id: customer._id,
+                    registration_date: moment(customer.registration_date).format('DD-MM-YYYY'),
+                    date_of_birth: moment(customer.account_info.date_of_birth).format('DD-MM-YYYY'),
+                    age: moment(moment(customer.account_info.date_of_birth).format("YYYY"), "YYYY").fromNow().replace('ago', 'old'),
+                    phone_number: customer.account_info.phone_number,
+                    email: customer.account_info.email
+                })
+            });
+            res.render('browse_customers', {
+                pageTitle: "Customer page",
+                siteName: res.locals.siteTitle,
+                errors: req.session.errors,
+                user: req.session.user,
+                role: req.session.role,
+                customer_list: customer_list
             })
+        },function(err){
+            req.session.errors.push(err);
+            res.redirect('/home');
         });
-        res.render('browse_customers', {
-            pageTitle: "Customer page",
-            siteName: res.locals.siteTitle,
-            errors: req.session.errors,
-            user: req.session.user,
-            role: req.session.role,
-            customer_list: customer_list
-        })
-    },function(err){
-        req.session.errors.push(err);
-        res.redirect('/home');
-    });
-});
+    }else{
+        res.status(403).end();
+    }
 
+});
+/*POST requests*/
+
+//locating customer by id
 router.post('/search',function(req,res){
 
     if(req.body.id.length > 0){accountController.find_customer(req.body.id).then(function(data){res.redirect('/customers/'+data._id);},function(err){
@@ -92,6 +108,7 @@ router.post('/search',function(req,res){
     }
 });
 
+//Submission of new customer form. The form is validated, verified and used to create a new customer.
 router.post('/registration/submit',function(req,res){
     var form = {
         name : req.body.name,
@@ -112,6 +129,8 @@ router.post('/registration/submit',function(req,res){
         done(console.error(err));
     });
 });
+
+//Modification of customer stored phone data.
 router.post('/edit/phone_number',function(req,res){
     var customer_id = req.body.customer_id,
         phone_number = req.body.phone_number;
@@ -131,6 +150,8 @@ router.post('/edit/phone_number',function(req,res){
         })
     }
 });
+
+//Modification of customer stored email address data
 router.post('/edit/email',function(req,res){
     var customer_id = req.body.customer_id,
         email = req.body.email;
@@ -150,4 +171,15 @@ router.post('/edit/email',function(req,res){
             })
     }
 });
+
+router.post('/delete',function(req,res){
+    accountController.delete_customer(req.body.customer_id).then(function(data){
+        console.log(data);
+        res.redirect('/customers');
+    },function(err){
+        console.log(err);
+        res.redirect('/customers/'+customer_id);
+    })
+});
+
 module.exports = router;

@@ -112,3 +112,19 @@ h1{
 .listBrowse li:hover{
   background-color: #DEDEDE;
 }
+#confirm_delete {
+  padding: 20px;
+  background-color: #f44336; /* Red */
+  color: white;
+  margin-bottom: 15px;
+}
+.btn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}

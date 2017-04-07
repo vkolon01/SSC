@@ -51,7 +51,8 @@ exports.edit_phone_number = function(phone_number, customer_id){
     return new Promise(function(fulfill,reject){
         Customer_Model.findByIdAndUpdate(customer_id,
             {$set:{'account_info.phone_number':phone_number}}
-        ,function(err){
+        ,function(err, account){
+            email_handler.sendChangePhoneNumberNotification(account,phone_number);
             if(err) reject(err);
             fulfill('Update is successful');
         })
@@ -65,8 +66,9 @@ exports.edit_email = function(email, customer_id){
            } else{
                Customer_Model.findByIdAndUpdate(customer_id,
                    {$set:{'account_info.email':email}}
-                   ,function(err){
+                   ,function(err, account){
                        if(err) reject(err);
+                       email_handler.sendChangeEmailNotification(account,email);
                        fulfill('Update is successful');
                    }
                )
@@ -123,3 +125,13 @@ exports.get_all_customers = function(){
         })
     })
 };
+
+exports.delete_customer = function(customer_id){
+    return new Promise(function(fulfill,reject){
+        Customer_Model.findOneAndRemove({'_id':customer_id},function(err,removed_account){
+            //Store deleted_account in a log file.
+            email_handler.sendRemovedAccountNotification(removed_account);
+            fulfill('The account has been removed');
+        })
+    })
+}

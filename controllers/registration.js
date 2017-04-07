@@ -1,18 +1,25 @@
 var express = require('express'),
     router = express.Router(),
     accountController = require('../models/accountController'),
-    form_validation = require('./app_routes/handlers/form_validation');
+    form_validation = require('./app_routes/handlers/form_validation'),
+    ac = require('./app_routes/handlers/roles').ac;
 
 
 router.get('/',function(req,res){
     req.session.err = null;
-    res.render('register',{
-        pageTitle: "Register",
-        siteName: res.locals.siteTitle,
-        errors: req.session.errors,
-        user: req.session.user,
-        role: req.session.role
-    });
+    var permission = ac.can(req.session.role).readAny('registration');
+    if(permission.granted){
+        res.render('register',{
+            pageTitle: "Register",
+            siteName: res.locals.siteTitle,
+            errors: req.session.errors,
+            user: req.session.user,
+            role: req.session.role
+        });
+    }else{
+        res.status(403).end();
+    }
+
 });
 
 
@@ -28,16 +35,23 @@ router.post('/submit',function(req,res){
         password_confirm: req.body.password_confirm,
         hash: ''
     };
-    form_validation.validate_staff_form(form).then(function(data){accountController.create_staff_account(data).then(function(data){
-        res.redirect('/');
+    var permission = ac.can(req.session.role).createAny(form.role);
+    if(permission.granted){
+        form_validation.validate_staff_form(form).then(function(data){accountController.create_staff_account(data).then(function(data){
+            res.redirect('/');
         },function(err){// Account creation error handling
             res.redirect('/registration');
             done(console.error(err));
         });
-    },function(err){ // Form handlers error handling
+        },function(err){ // Form handlers error handling
             req.session.errors = err;
             res.redirect('/registration');
             done(console.error(err));
         });
+    }else{
+        res.status(403).end();
+    }
+
+
 });
 module.exports = router;
