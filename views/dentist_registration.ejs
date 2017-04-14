@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <% include template/head.ejs %>
-  </head>
-  <body>
-  <% include template/errors.ejs %>
-  <div class="container">
+</head>
+<body>
+<div class="container">
     <h1><%= pageTitle %></h1>
+    <% include template/errors.ejs %>
     <% include template/sidebar.ejs %>
     <div class="main_content">
-      <% include forms/staff_registration.ejs%>
+        <% include forms/dentist_registration_form.ejs%>
     </div>
-  </div>
-  </body>
+</div>
+</body>
 </html>

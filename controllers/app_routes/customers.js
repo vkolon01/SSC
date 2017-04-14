@@ -3,10 +3,12 @@ var express = require('express'),
     accountController = require('../../models/accountController'),
     form_validation = require('./handlers/form_validation'),
     moment = require('moment'),
-    ac = require('./handlers/roles').ac;
+    accessHandler = require('./handlers/roles');
+
+var userRole = 'guest';
 /*
 middleware to redirect any unregistered user back to login page
-*/
+
 router.use(function(req,res,next){
     if(!req.session || typeof req.session.user === 'undefined'){
         res.redirect('/login');
@@ -14,21 +16,34 @@ router.use(function(req,res,next){
         next();
     }
 });
+*/
+
+router.use(function(req,res,next){
+    if(typeof req.session !== 'undefined' && typeof req.session.role !== 'undefined' && accessHandler.roles.indexOf(req.session.role) !== -1){
+        userRole = req.session.role;
+    }
+    next();
+});
 
 router.get('/registration',function(req,res){
     req.session.err = null;
-    res.render('customer_registration',{
-        pageTitle: "Customer registration",
-        siteName: res.locals.siteTitle,
-        errors: req.session.errors,
-        user: req.session.user,
-        role: req.session.role
-    });
+    var permission = accessHandler.ac.can(userRole).createAny('customer');
+    if (permission.granted) {
+        res.render('customer_registration', {
+            pageTitle: "Customer registration",
+            siteName: res.locals.siteTitle,
+            errors: req.session.errors,
+            user: req.session.user,
+            role: req.session.role
+        });
+    }else{
+        res.status(403).end();
+    }
 });
 
 router.get('/:customer_id',function(req,res){
 
-    var permission = ac.can(req.session.role).readAny('customer');
+    var permission = accessHandler.ac.can(userRole).readAny('customer');
     if (permission.granted){
         accountController.find_customer(req.params.customer_id).then(function(data){
             var customer_data = {
@@ -56,11 +71,11 @@ router.get('/:customer_id',function(req,res){
     }else{
         res.status(403).end();
     }
-
 });
 
 router.get('/',function(req,res){
-    var permission = ac.can(req.session.role).readAny('customer');
+    console.log(userRole);
+    var permission = accessHandler.ac.can(userRole).readAny('customer');
     if(permission.granted){
         accountController.get_all_customers().then(function(data) {
             var customer_list = [{}];
@@ -76,7 +91,7 @@ router.get('/',function(req,res){
                     email: customer.account_info.email
                 })
             });
-            res.render('browse_customers', {
+            res.render('customer_browse', {
                 pageTitle: "Customer page",
                 siteName: res.locals.siteTitle,
                 errors: req.session.errors,
@@ -91,7 +106,6 @@ router.get('/',function(req,res){
     }else{
         res.status(403).end();
     }
-
 });
 /*POST requests*/
 

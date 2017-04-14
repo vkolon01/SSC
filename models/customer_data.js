@@ -1,8 +1,7 @@
 var Account_Info = require('./account_info').account_data(),
-    email_handler = require('../controllers/app_routes/handlers/email_handler');
+    email_handler = require('../controllers/app_routes/handlers/email_handler'),
     mongoose = require('mongoose'),
     Promise = require('promise'),
-    crypt = require('password-hash-and-salt'),
     shortid = require('shortid');
 
 //mongoose schema for the customer.
@@ -47,6 +46,7 @@ exports.create_account = function(form){
         });
     })
 };
+
 exports.edit_phone_number = function(phone_number, customer_id){
     return new Promise(function(fulfill,reject){
         Customer_Model.findByIdAndUpdate(customer_id,
@@ -114,7 +114,7 @@ exports.find_customer_by_email = function(email){
     });
 };
 
-exports.get_all_customers = function(){
+exports.get_all_accounts = function(){
     return new Promise(function(fulfill,reject){
         Customer_Model.find(function(err,list){
             if(err) reject('Error has occurred');
@@ -134,4 +134,4 @@ exports.delete_customer = function(customer_id){
             fulfill('The account has been removed');
         })
     })
-}
+};

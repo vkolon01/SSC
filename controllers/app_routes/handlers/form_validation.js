@@ -4,11 +4,16 @@ var express = require('express'),
     crypt = require('password-hash-and-salt'),
     async = require('async'),
     moment = require('moment');
-exports.validate_customer_form = function(form) {
-    var errors = [];
+
+exports.validate_dentist_form = function(form){
     return new Promise(function (fulfill, reject) {
-        const MIN_CUSTOMER_AGE = 5;
-        var nameOptions = {min: 3, max: 50};
+        const MIN_DENTIST_AGE = 18,
+            MIN_NAME_LENGTH = 3,
+            MAX_NAME_LENGTH = 50;
+
+        var nameOptions = {min: MIN_NAME_LENGTH, max: MAX_NAME_LENGTH},
+            errors = [];
+
         if (!validator.isAlpha(form.name.replace(' ', ''))) {
             errors.push('Please enter a valid name');
         }
@@ -18,7 +23,32 @@ exports.validate_customer_form = function(form) {
         if (validator.isEmpty(form.email) || !validator.isEmail(form.email)) {
             errors.push('Enter a valid email address.');
         }
-        if(moment(moment(form.date_of_birth).format("YYYY"),"YYYY").fromNow() < MIN_CUSTOMER_AGE){  //Does not work
+        if(moment(moment(form.date_of_birth).format("YYYY"),"YYYY").fromNow() < MIN_DENTIST_AGE){
+            errors.push('The dentist is too young');
+        }
+        if (errors.length > 0)return reject(errors);
+        fulfill(form);
+    });
+};
+
+exports.validate_customer_form = function(form) {
+    return new Promise(function (fulfill, reject) {
+        const MIN_CUSTOMER_AGE = 5,
+            MIN_NAME_LENGTH = 3,
+            MAX_NAME_LENGTH = 50;
+
+        var nameOptions = {min: MIN_NAME_LENGTH, max: MAX_NAME_LENGTH},
+            errors = [];
+        if (!validator.isAlpha(form.name.replace(' ', ''))) {
+            errors.push('Please enter a valid name');
+        }
+        if (!validator.isLength(form.name, nameOptions)) {
+            errors.push('The name must be between 3 and 50 characters.')
+        }
+        if (validator.isEmpty(form.email) || !validator.isEmail(form.email)) {
+            errors.push('Enter a valid email address.');
+        }
+        if(moment(moment(form.date_of_birth).format("YYYY"),"YYYY").fromNow() < MIN_CUSTOMER_AGE){
             errors.push('The customer is too young');
         }
         if (errors.length > 0)return reject(errors);
@@ -37,6 +67,7 @@ exports.validate_phone_number = function(phone_number){
         }
     });
 };
+
 exports.validate_email = function(email){
 
     return new Promise(function(fulfill,reject){
