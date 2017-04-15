@@ -4,22 +4,27 @@ var AccessControl = require('accesscontrol'),
 var roles = ['guest','receptionist','assistant_manager','general_manager','admin'],
     errors ={
         create_account: 'You don\'t have authorization to create this account',
-        read_page: 'You don\'t have authorization to view this page.'
+        delete_account: 'You don\'t have authorization to delete this account',
+        read_page: 'You don\'t have authorization to view this page.',
+        other: 'You don\'t have authorization to perform this action'
     };
 ac.grant('receptionist')
     .readAny('customer')
     .readAny('dentist')
+    .updateAny('customer')
     .createAny('customer')
 .grant('assistant_manager')
     .extend('receptionist')
-    .deleteAny('customer')
-    .createAny('receptionist')
     .readAny('registration')
+    .updateAny('dentist')
+    .createAny('receptionist')
     .createAny('dentist')
+    .deleteAny('customer')
 .grant('general_manager')
     .extend('assistant_manager')
     .extend('receptionist')
     .createAny('assistant_manager')
+    .deleteAny('dentist')
 .grant('admin')
     .extend('assistant_manager')
     .extend('receptionist')

@@ -11,7 +11,9 @@ exports.create_staff_account = function(form){return staff_data.create_account(f
 exports.create_dentist_account = function(form){return dentist_data.create_account(form)};
 
 exports.edit_customer_phone_number = function(phone_number,customer_id){return customer_data.edit_phone_number(phone_number,customer_id)};
+exports.edit_dentist_phone_number = function(phone_number,id){return dentist_data.edit_phone_number(phone_number,id)};
 exports.edit_customer_email = function(email,customer_id){return customer_data.edit_email(email,customer_id)};
+exports.edit_dentist_email = function(email,id){return dentist_data.edit_email(email,id)};
 
 exports.find_customer = function(id){return customer_data.find_account(id)};
 exports.find_dentist = function(id){return dentist_data.find_account(id)};

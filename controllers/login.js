@@ -11,6 +11,7 @@ router.use(function(req,res,next){
 });
 
 router.get('/',function(req,res){
+
     res.render('login',{
         pageTitle: "Home",
         siteName: res.locals.siteTitle,

@@ -18,10 +18,10 @@
             <h4>Date of birth: <%=dentist_data.date_of_birth%> (<%=dentist_data.age%>)</h4>
 
             <h4 id="phone_number">Phone number: <%=dentist_data.phone_number%> <input type="button" onclick="change_phone_number()" value="edit"></h4>
-            <form id="edit_phone_number" style="display:none" action="/customers/edit/phone_number" method="post"><input name="phone_number" type="text" value="<%=dentist_data.phone_number%>"><input type="hidden" name="customer_id" value="<%=dentist_data.id%>"><button type="submit">Apply</button></form>
+            <form id="edit_phone_number" style="display:none" action="/dentist/edit/phone_number" method="post"><input name="phone_number" type="text" value="<%=dentist_data.phone_number%>"><input type="hidden" name="id" value="<%=dentist_data.id%>"><button type="submit">Apply</button></form>
 
             <h4 id="email_address">Email address: <%=dentist_data.email%> <input type="button" onclick="change_email()" value="edit"></h4>
-            <form id="edit_email" style="display:none"  action="/customers/edit/email" method="post"><input name="email" type="email" value="<%=dentist_data.email%>"><input type="hidden" name="customer_id" value="<%=dentist_data.id%>"><button type="submit">Apply</button></form>
+            <form id="edit_email" style="display:none"  action="/dentist/edit/email" method="post"><input name="email" type="email" value="<%=dentist_data.email%>"><input type="hidden" name="id" value="<%=dentist_data.id%>"><button type="submit">Apply</button></form>
         </div>
 
         <div id="confirm_delete" style="display:none">

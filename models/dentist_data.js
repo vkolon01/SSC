@@ -81,3 +81,33 @@ exports.delete = function(id){
         })
     })
 };
+exports.edit_phone_number = function(phone_number, id){
+    return new Promise(function(fulfill,reject){
+        Dentist_Model.findByIdAndUpdate(id,
+            {$set:{'account_info.phone_number':phone_number}}
+            ,function(err, account){
+                email_handler.sendChangePhoneNumberNotification(account,phone_number);
+                if(err) reject(err);
+                fulfill('Update is successful');
+            })
+    });
+};
+exports.edit_email = function(email, id){
+    return new Promise(function(fulfill,reject){
+        Dentist_Model.find({'account_info.email':email},function(err,result){
+            if(result.length > 0){
+                reject('The email is already in use');
+            } else{
+                Dentist_Model.findByIdAndUpdate(id,
+                    {$set:{'account_info.email':email}}
+                    ,function(err, account){
+                        if(err) reject(err);
+                        email_handler.sendChangeEmailNotification(account,email);
+                        fulfill('Update is successful');
+                    }
+                )
+            }
+        });
+
+    });
+};

@@ -10,9 +10,6 @@ var port = 3000;
 var app = express();
 var validator = require('express-validator');
 
-
-
-
 //database connection
 var mongoose = require('mongoose'),
     mongoBase = require('connect-mongo')(session);
