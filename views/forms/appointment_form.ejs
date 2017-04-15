@@ -1,3 +1,40 @@
 <form id="appointment_form" action="/customer/appointment" method="post">
 
+    <select onchange="dentist_selection(this)">
+        <option value="" selected > Select Dentist</option>
+        <%dentist_list.forEach(function(dentist){%>
+            <option value="<%=dentist.id%>"><%=dentist.account_info.name%></option>
+        <%});%>
+    </select>
+
+    <div id="available_timeslot" style="display:none">
+        <table id="browse_timeslots">
+            <tr class="header">
+                <th style="width:50%;"><input type="text" id="from" onkeyup="filterID()" placeholder="Filter by ID.." title="Type customer ID"><br><br>ID</th>
+                <th style="width:50%;"><input type="text" id="to" onkeyup="filterName()" placeholder="Filter by name.." title="Type customer name"> <br><br>Name</th>
+                </tr>
+            <%if(typeof customer_list !== 'undefined'){
+            customer_list.forEach(function(customer){ %>
+            <%if(typeof customer.id !=='undefined'){%>
+            <tr class="customer_url" data-href="<%='customers/'+customer.id%>">
+                <td><%=customer.id%></td>
+                <td><%=customer.name%></td>
+                <td><%=customer.date_of_birth%></td>
+            </tr>
+            <% }});
+            }%>
+        </table>
+    </div>
 </form>
+
+<script>
+    //available timeslot display of the selected dentist.
+    function dentist_selection(dentist){
+        if(dentist.value !== ""){
+            var dentistid = dentist.value;
+            document.getElementById("available_timeslot").style.display = "";
+        }else{
+            document.getElementById("available_timeslot").style.display = "none";
+        }
+    }
+</script>

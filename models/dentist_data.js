@@ -2,9 +2,24 @@ var Account_Info = require('./account_info').account_data(),
     email_handler = require('../controllers/app_routes/handlers/email_handler'),
     mongoose = require('mongoose'),
     Promise = require('promise'),
-    shortid = require('shortid');
+    shortid = require('shortid'),
+    timespan = require('timespan');
 
 //mongoose schema for the dentist account.
+var working_hours = {
+    type:[timespan.TimeSpan()],
+    default:[new timespan.TimeSpan(0,0,0,0),new timespan.TimeSpan(59,59,59,23)]
+},
+    working_days = {
+        monday:working_hours,
+        tuesday:working_hours,
+        wednesday:working_hours,
+        thursday:working_hours,
+        friday:working_hours,
+        saturday:working_hours,
+        sunday:working_hours
+    };
+
 var Dentist_Schema = new mongoose.Schema({
     role: {
         type: String,
@@ -12,6 +27,7 @@ var Dentist_Schema = new mongoose.Schema({
     },
     _id:String,
     registration_date: Date,
+    working_days: working_days,
     account_info: Account_Info
 });
 

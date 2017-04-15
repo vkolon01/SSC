@@ -30,6 +30,8 @@ router.get('/:customer_id',function(req,res){
     var permission = accessHandler.ac.can(userRole).readAny('customer');
     if (permission.granted){
         accountController.find_customer(req.params.customer_id).then(function(data){
+
+            //Customer data
             var customer_data = {
                 name : data.account_info.name,
                 id: data._id,
@@ -39,14 +41,22 @@ router.get('/:customer_id',function(req,res){
                 phone_number:data.account_info.phone_number,
                 email:data.account_info.email
             };
-            console.log('what is going onnn');
-            res.render('customer_page',{
-                pageTitle: "Customer page",
-                siteName: res.locals.siteTitle,
-                errors: req.session.errors,
-                user: req.session.user,
-                role: req.session.role,
-                customer_data: customer_data
+
+            //Dentist list collection
+            var list = [];
+            accountController.get_all_dentists().then(function(dentist_list){
+                res.render('customer_page',{
+                    pageTitle: "Customer page",
+                    siteName: res.locals.siteTitle,
+                    errors: req.session.errors,
+                    user: req.session.user,
+                    role: req.session.role,
+                    customer_data: customer_data,
+                    dentist_list: dentist_list
+                });
+            },function(err){
+                req.session.errors.push(err);
+                res.redirect('/home');
             });
         },function(err){
             req.session.errors.push(err);
@@ -62,7 +72,6 @@ router.get('/',function(req,res){
     if(permission.granted){
         accountController.get_all_customers().then(function(data) {
             var customer_list = [{}];
-
             data.forEach(function (customer) {
                 customer_list.push({
                     name: customer.account_info.name,
