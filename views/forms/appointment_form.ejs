@@ -1,40 +1,51 @@
-<form id="appointment_form" action="/customer/appointment" method="post">
+<form id="appointment_form" action="/appointments/get_availability" method="post">
 
-    <select onchange="dentist_selection(this)">
+    <select id=dentist_id name="dentist_id" onchange="display_button()">
         <option value="" selected > Select Dentist</option>
         <%dentist_list.forEach(function(dentist){%>
             <option value="<%=dentist.id%>"><%=dentist.account_info.name%></option>
         <%});%>
     </select>
+    <select id="time_slot" name="time_slot" onchange="display_button()">
+        <option value="" selected> Time required </option>
+        <option value="15">15 minutes</option>
+        <option value="30">30 minutes</option>
+        <option value="45">45 minutes</option>
+        <option value="60">1 hour</option>
+    </select>
+    <br><br>
 
-    <div id="available_timeslot" style="display:none">
-        <table id="browse_timeslots">
-            <tr class="header">
-                <th style="width:50%;"><input type="text" id="from" onkeyup="filterID()" placeholder="Filter by ID.." title="Type customer ID"><br><br>ID</th>
-                <th style="width:50%;"><input type="text" id="to" onkeyup="filterName()" placeholder="Filter by name.." title="Type customer name"> <br><br>Name</th>
-                </tr>
-            <%if(typeof customer_list !== 'undefined'){
-            customer_list.forEach(function(customer){ %>
-            <%if(typeof customer.id !=='undefined'){%>
-            <tr class="customer_url" data-href="<%='customers/'+customer.id%>">
-                <td><%=customer.id%></td>
-                <td><%=customer.name%></td>
-                <td><%=customer.date_of_birth%></td>
-            </tr>
-            <% }});
-            }%>
-        </table>
-    </div>
+    <button id="search" style="display:none" type="submit">search</button>
 </form>
 
 <script>
     //available timeslot display of the selected dentist.
-    function dentist_selection(dentist){
-        if(dentist.value !== ""){
-            var dentistid = dentist.value;
-            document.getElementById("available_timeslot").style.display = "";
+    function display_button(){
+        var dentist = document.getElementById("dentist_id").value,
+            time_slot = document.getElementById("time_slot").value
+        if(dentist == "" || time_slot == ""){
+            document.getElementById("search").style.display = "none";
         }else{
-            document.getElementById("available_timeslot").style.display = "none";
+            document.getElementById("search").style.display = "";
         }
     }
+
+    /*<div id="available_timeslot" style="display:none">
+            <table id="browse_timeslots">
+            <tr class="header">
+            <th style="width:50%;">ID</th>
+            <th style="width:50%;">Name</th>
+            </tr>
+            <%if(typeof customer_list !== 'undefined'){
+            customer_list.forEach(function(customer){ %>
+            <%if(typeof customer.id !=='undefined'){%>
+            <tr class="customer_url" data-href="<%='customers/'+customer.id%>">
+            <td><%=customer.id%></td>
+            <td><%=customer.name%></td>
+            <td><%=customer.date_of_birth%></td>
+            </tr>
+            <% }});
+            }%>
+            </table>
+            </div>*/
 </script>

@@ -19,7 +19,6 @@ var Account_Schema = new mongoose.Schema({
 Account_Model = mongoose.model('login_data', Account_Schema);
 
 
-
 exports.create_account = function(form){
     return new Promise(function(fulfill,reject){
         var account = new Account_Model({

@@ -4,7 +4,8 @@
 
 var staff_data = require('./staff_data'),
     customer_data = require('./customer_data'),
-    dentist_data = require('./dentist_data');
+    dentist_data = require('./dentist_data'),
+    appointment_data = require('./appointment_data');
 
 exports.create_customer_account = function(form){return customer_data.create_account(form)};
 exports.create_staff_account = function(form){return staff_data.create_account(form)};
@@ -25,3 +26,8 @@ exports.login =function(form){return staff_data.login(form)};
 
 exports.delete_dentist = function(id){return dentist_data.delete(id)};
 exports.delete_customer = function(customer_id){return customer_data.delete_customer(customer_id)};
+
+exports.create_appointment = function(data){return appointment_data.create_appointment(data)};
+exports.find_appointment = function(id){return appointment_data.find_appointment(id)};
+exports.browse_appointments = function(id){return appointment_data.browse_appointments(id)};
+exports.delete_appointment = function(data){return appointment_data.delete_appointment(data)};

@@ -101,6 +101,7 @@ router.get('/',function(req,res){
 });
 /*POST requests*/
 
+
 //Submission of new customer form. The form is validated, verified and used to create a new customer.
 router.post('/registration/submit',function(req,res){
     var permission = accessHandler.ac.can(userRole).createAny('customer');

@@ -3,12 +3,14 @@ var Account_Info = require('./account_info').account_data(),
     mongoose = require('mongoose'),
     Promise = require('promise'),
     shortid = require('shortid'),
-    timespan = require('timespan');
+    timespan = require('timespan'),
+    later = require('later');
 
 //mongoose schema for the dentist account.
+
 var working_hours = {
-    type:[timespan.TimeSpan()],
-    default:[new timespan.TimeSpan(0,0,0,0),new timespan.TimeSpan(59,59,59,23)]
+    type:[Number],
+    default:[0,0]
 },
     working_days = {
         monday:working_hours,
@@ -27,6 +29,7 @@ var Dentist_Schema = new mongoose.Schema({
     },
     _id:String,
     registration_date: Date,
+    holidays:[Date],
     working_days: working_days,
     account_info: Account_Info
 });

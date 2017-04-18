@@ -87,7 +87,6 @@ router.get('/',function(req,res){
     }
 });
 
-
 router.post('/delete',function(req,res){
     var permission = accessHandler.ac.can(userRole).deleteAny('dentist');
     if(permission.granted){
