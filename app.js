@@ -6,7 +6,7 @@ var bodyParser = require('body-parser');
 var config = require('./config');
 var reload = require('reload');
 var session = require('express-session');
-var port = 3000;
+var port = 3001;
 var app = express();
 var validator = require('express-validator');
 

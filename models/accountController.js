@@ -21,6 +21,7 @@ exports.find_dentist = function(id){return dentist_data.find_account(id)};
 exports.find_customer_by_email = function(customer_email){return customer_data.find_customer_by_email(customer_email)};
 exports.get_all_customers = function(){return customer_data.get_all_accounts()};
 exports.get_all_dentists = function(){return dentist_data.get_all_accounts()};
+//exports.get_dentist_constraints = function(id){return dentist_data.get_constraints()};
 
 exports.login =function(form){return staff_data.login(form)};
 

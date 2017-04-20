@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include template/head.ejs %>
+</head>
+<body>
+
+<div class="container">
+
+    <% include template/errors.ejs %>
+    <% include template/sidebar.ejs %>
+    <h1><%= pageTitle %></h1>
+    <br><br>
+    <br><br>
+    <div id="available_timeslot">
+        <select>
+            <option selected value="">select times</option>
+            <%available_times.forEach(function(timebox){%>
+                <option> <%=timebox.from%> - <%=timebox.to%></option>
+            <%})%>
+        </select>
+
+        <table id="browse_timetable" style="display:none">
+            <tr class="header">
+                <th style="width:50%;">F</th>
+                <th style="width:50%;">Name</th>
+            </tr>
+            <%if(typeof customer_list !== 'undefined'){
+            customer_list.forEach(function(customer){ %>
+            <%if(typeof customer.id !=='undefined'){%>
+            <tr class="customer_url" data-href="<%='customers/'+customer.id%>">
+                <td><%=customer.id%></td>
+                <td><%=customer.name%></td>
+                <td><%=customer.date_of_birth%></td>
+            </tr>
+            <% }});
+            }%>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

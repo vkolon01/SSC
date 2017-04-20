@@ -1,0 +1,8 @@
+<select id="available_times" onchange="display_btn(this.value)">
+    <option selected value = "">Please select hour</option>
+    <%list.forEach(function(element){%>
+    <option value="<%=element%>"><%=element%></option>
+    <%})%>
+</select>
+
+

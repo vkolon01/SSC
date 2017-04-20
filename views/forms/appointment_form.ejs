@@ -1,51 +1,106 @@
-<form id="appointment_form" action="/appointments/get_availability" method="post">
-
-    <select id=dentist_id name="dentist_id" onchange="display_button()">
+<form id="event">
+    <select id=dentist_id name="dentist_id" onchange="display_days()">
         <option value="" selected > Select Dentist</option>
         <%dentist_list.forEach(function(dentist){%>
-            <option value="<%=dentist.id%>"><%=dentist.account_info.name%></option>
+        <option value="<%=dentist.id%>"><%=dentist.account_info.name%></option>
         <%});%>
     </select>
-    <select id="time_slot" name="time_slot" onchange="display_button()">
+
+    <select id="time_slot" name="time_slot" onchange="display_days()">
         <option value="" selected> Time required </option>
         <option value="15">15 minutes</option>
         <option value="30">30 minutes</option>
         <option value="45">45 minutes</option>
         <option value="60">1 hour</option>
     </select>
-    <br><br>
 
-    <button id="search" style="display:none" type="submit">search</button>
+    <br><br>
 </form>
+<section id="days"></section>
+<section id="list"></section>
+<button id="submit_appointment" style="display:none" onclick="submit_appointment()">Book appointment</button>
+
+    <form id="appointment_form" action="/appointments/get_availability" method="post">
+    </form>
 
 <script>
-    //available timeslot display of the selected dentist.
-    function display_button(){
+
+    function display_days(){
         var dentist = document.getElementById("dentist_id").value,
-            time_slot = document.getElementById("time_slot").value
+            time_slot = document.getElementById("time_slot").value;
         if(dentist == "" || time_slot == ""){
-            document.getElementById("search").style.display = "none";
+            document.getElementById("days").style.display = "none";
         }else{
-            document.getElementById("search").style.display = "";
+            document.getElementById("days").style.display = "";
+            get_days();
         }
     }
+    function get_days(){
+        var time_slot = document.getElementById("time_slot").value
+        var dentist_id = document.getElementById("dentist_id").value
+            $.ajax({
+                url:"/appointments/get_days",
+                type: "POST",
+                contentType:"application/json",
+                data:JSON.stringify({"time_slot":time_slot,"dentist_id":dentist_id})
+            }).done(function(result){
+                console.log(result);
+                update_days(result)
+            }).fail(function(err){
+                console.log(err);
+            })
+    }
+    function get_times(selected_date){
+        var time_slot = document.getElementById("time_slot").value
+        var dentist_id = document.getElementById("dentist_id").value
+        var date = selected_date
+        console.log(date);
+        if(date !== ""){
+            $.ajax({
+                url:"/appointments/get_times",
+                type: "POST",
+                contentType:"application/json",
+                data:JSON.stringify({"time_slot":time_slot,"dentist_id":dentist_id,"date":date})
+            }).done(function(result){
+                update_list(result)
+            }).fail(function(err){
+                console.log(err);
+            })
+        }
+    }
+    function update_list(list){
+        var section = document.getElementById("list");
+        section.innerHTML = list;
+    }
+    function update_days(days){
+        var     section = document.getElementById("days");
+        section.innerHTML = days;
+    }
+    function display_btn(data){
+        var submit_btn = document.getElementById("submit_appointment")
+        if(data !== ""){
+            submit_btn.style.display = ""
+        }else{
+            submit_btn.style.display = "none"
+        }
 
-    /*<div id="available_timeslot" style="display:none">
-            <table id="browse_timeslots">
-            <tr class="header">
-            <th style="width:50%;">ID</th>
-            <th style="width:50%;">Name</th>
-            </tr>
-            <%if(typeof customer_list !== 'undefined'){
-            customer_list.forEach(function(customer){ %>
-            <%if(typeof customer.id !=='undefined'){%>
-            <tr class="customer_url" data-href="<%='customers/'+customer.id%>">
-            <td><%=customer.id%></td>
-            <td><%=customer.name%></td>
-            <td><%=customer.date_of_birth%></td>
-            </tr>
-            <% }});
-            }%>
-            </table>
-            </div>*/
+    }
+    function submit_appointment(){
+        var     dentist_id = document.getElementById("dentist_id").value,
+                time_slot = document.getElementById("time_slot").value,
+                available_day = document.getElementById("available_days").value,
+                available_time = document.getElementById("available_times").value,
+                customer_id = document.getElementById("customer_id").value;
+        $.ajax({
+            type: 'POST',
+            url: '/appointments/create_appointment',
+            contentType:"application/json",
+            data: JSON.stringify({"time_slot": time_slot,"available_day": available_day,"available_time":available_time,"dentist_id": dentist_id,"customer_id": customer_id%>})
+        }).done(function(result){
+            alert(result);
+            update_days(result)
+        }).fail(function(err){
+            console.log(err);
+        });
+    }
 </script>

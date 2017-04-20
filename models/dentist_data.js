@@ -65,7 +65,6 @@ exports.find_account = function(id){
 };
 
 exports.create_account = function(form){
-
     return new Promise(function(fulfill,reject){
         Dentist_Model.find({'account_info.email':form.email},function(err,result){
             if(result.length > 0){
@@ -128,5 +127,15 @@ exports.edit_email = function(email, id){
             }
         });
 
+    });
+};
+exports.get_constraints = function(id){
+    return new Promise(function(fulfill,reject){
+        exports.find_account(id).then(function(dentist){
+            var holidays = dentist.holidays,
+                working_days = dentist.working_days;
+        },function(err){
+            reject(err)
+        })
     });
 };

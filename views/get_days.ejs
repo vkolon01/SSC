@@ -1,0 +1,8 @@
+<select id="available_days" onchange="get_times(this.value)">
+    <option selected value="">Please select day</option>
+    <%days.forEach(function(element){%>
+    <option value="<%=element%>"><%=element%></option>
+    <%})%>
+</select>
+
+
