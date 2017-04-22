@@ -76,6 +76,7 @@ exports.create_account = function(form){
                     account_info:{
                         name:form.name,
                         phone_number: form.phone_number,
+                        gender: form.gender,
                         date_of_birth: form.date_of_birth,
                         email: form.email
                     }

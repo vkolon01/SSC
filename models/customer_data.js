@@ -34,7 +34,8 @@ exports.create_account = function(form){
                         name:form.name,
                         phone_number: form.phone_number,
                         date_of_birth: form.date_of_birth,
-                        email: form.email
+                        email: form.email,
+                        gender:form.gender
                     }
                 });
                 account.save(function(err,account){

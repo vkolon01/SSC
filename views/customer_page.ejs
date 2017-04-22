@@ -11,13 +11,10 @@
     <div class="main_content">
         <div class="account details">
             <h3>Name: <%=customer_data.name%></h3>
-
+            <h4>Gender: <%=customer_data.gender%></h4>
             <h4>ID: <%=customer_data.id%></h4>
-
             <h4>Registered on <%=customer_data.registration_date%></h4>
-
             <h4>Date of birth: <%=customer_data.date_of_birth%> (<%=customer_data.age%>)</h4>
-
             <h4 id="phone_number">Phone number: <%=customer_data.phone_number%> <input type="button" onclick="change_phone_number()" value="edit"></h4>
             <form id="edit_phone_number" style="display:none" action="/customers/edit/phone_number" method="post"><input name="phone_number" type="text" value="<%=customer_data.phone_number%>"><input type="hidden" name="customer_id" value="<%=customer_data.id%>"><button type="submit">Apply</button></form>
 

@@ -55,12 +55,12 @@ exports.sendChangeEmailNotification = function(data,new_email){
 
     transporter.sendMail(email,function(err){if(err) console.log(err)})
 };
-exports.sendChangePhoneNumberNotification = function(data,new_phone_number){
+exports.sendChangePhoneNumberNotification = function(account,new_phone_number){
     var email = {
         from:'GiveMeYourEmailPlease@gmail.com',
-        to: data.account_info.email,
+        to: account.account_info.email,
         subject: 'Welcome to ' + COMPANY_NAME,
-        text: 'Hello ' + data.account_info.name + '. You recently changed your phone number at ' + COMPANY_NAME + '.\n\n'+
+        text: 'Hello ' + account.account_info.name + '. You recently changed your phone number at ' + COMPANY_NAME + '.\n\n'+
         'The phone number is now ' + new_phone_number + '.'
     };
     transporter.sendMail(email,function(err){if(err) console.log(err)})
@@ -86,5 +86,18 @@ exports.sendRemovedAccountNotification = function(removed_account){
             'Thank you.'
         };
     }
+    transporter.sendMail(email,function(err){if(err) console.log(err)});
+};
+exports.sendBookedAppointmentNotification = function(data){
+    var appointment = data.appointment,
+        customer = data.customer,
+        dentist = data.dentist,
+        email = {
+            from:'GiveMeYourEmailPlease@gmail.com',
+            to: customer.account_info.email,
+            subject: 'Booked appointment at ' + COMPANY_NAME,
+            text: 'Hello ' + customer.account_info.name + '. You have booked an appointment with doctor ' + dentist.account_info.name  + ' on ' + appointment.start.format('ddd DD/MM/YYYY') + ' at ' + appointment.start.format('HH:mm')
+            + 'Thank you.'
+        };
     transporter.sendMail(email,function(err){if(err) console.log(err)});
 };

@@ -32,6 +32,7 @@ router.get('/:dentist_id',function(req,res){
         accountController.find_dentist(req.params.dentist_id).then(function(data){
             var dentist_data = {
                 name : data.account_info.name,
+                gender: data.account_info.gender.charAt(0).toUpperCase() + data.account_info.gender.slice(1),
                 id: data._id,
                 date_of_birth: moment(data.account_info.date_of_birth).format('DD-MM-YYYY'),
                 age: moment(moment(data.account_info.date_of_birth).format("YYYY"),"YYYY").fromNow().replace('ago','old'),
@@ -159,6 +160,7 @@ router.post('/registration/submit',function(req,res){
         var form = {
             name: req.body.name,
             email: req.body.email,
+            gender: req.body.gender,
             date_of_birth: req.body.date_of_birth,
             phone_number: req.body.phone_number
         };

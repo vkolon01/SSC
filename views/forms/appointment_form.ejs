@@ -44,7 +44,6 @@
                 contentType:"application/json",
                 data:JSON.stringify({"time_slot":time_slot,"dentist_id":dentist_id})
             }).done(function(result){
-                console.log(result);
                 update_days(result)
             }).fail(function(err){
                 console.log(err);
@@ -54,7 +53,6 @@
         var time_slot = document.getElementById("time_slot").value
         var dentist_id = document.getElementById("dentist_id").value
         var date = selected_date
-        console.log(date);
         if(date !== ""){
             $.ajax({
                 url:"/appointments/get_times",
@@ -97,8 +95,7 @@
             contentType:"application/json",
             data: JSON.stringify({"time_slot": time_slot,"available_day": available_day,"available_time":available_time,"dentist_id": dentist_id,"customer_id": customer_id%>})
         }).done(function(result){
-            alert(result);
-            update_days(result)
+            console.log(result.message);
         }).fail(function(err){
             console.log(err);
         });

@@ -30,11 +30,11 @@ router.get('/:customer_id',function(req,res){
     var permission = accessHandler.ac.can(userRole).readAny('customer');
     if (permission.granted){
         accountController.find_customer(req.params.customer_id).then(function(data){
-
             //Customer data
             var customer_data = {
                 name : data.account_info.name,
                 id: data._id,
+                gender: data.account_info.gender.charAt(0).toUpperCase() + data.account_info.gender.slice(1),
                 registration_date: moment(data.registration_date).format('DD-MM-YYYY'),
                 date_of_birth: moment(data.account_info.date_of_birth).format('DD-MM-YYYY'),
                 age: moment(moment(data.account_info.date_of_birth).format("YYYY"),"YYYY").fromNow().replace('ago','old'),
@@ -101,7 +101,6 @@ router.get('/',function(req,res){
 });
 /*POST requests*/
 
-
 //Submission of new customer form. The form is validated, verified and used to create a new customer.
 router.post('/registration/submit',function(req,res){
     var permission = accessHandler.ac.can(userRole).createAny('customer');
@@ -110,7 +109,8 @@ router.post('/registration/submit',function(req,res){
             name : req.body.name,
             phone_number : req.body.phone_number,
             email : req.body.email,
-            date_of_birth : req.body.date_of_birth
+            date_of_birth : req.body.date_of_birth,
+            gender : req.body.gender
         };
 
         form_validation.validate_customer_form(form).then(function(data){accountController.create_customer_account(data).then(function(data){

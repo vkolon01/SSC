@@ -1,0 +1,20 @@
+<%if(typeof appointment_list !== 'undefined'){%>
+<table id="browse_table">
+    <tr class="header">
+        <th style="width:25%;">Date</th>
+        <th style="width:25%;">Time</th>
+        <th style="width:30%">Customer Name</th>
+        <th style="width:15%">Session time</th>
+        <th style="width:5%">Delete</th>
+    </tr>
+    <%appointment_list.forEach(function(appointment){ %>
+    <tr class="appointment_id">
+        <td><%=appointment.date%></td>
+        <td><%=appointment.time%></td>
+        <td><%=appointment.customer.account_info.name%></td>
+        <td><%=appointment.time_slot%></td>
+        <td><button onclick="delete_appointment(this.value)" value="<%=appointment.id%>">&times;</button></td>
+    </tr>
+        <% });%>
+</table>
+<%}%>

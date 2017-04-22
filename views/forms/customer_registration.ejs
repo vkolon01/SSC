@@ -1,8 +1,9 @@
 <form action="/customers/registration/submit" method="post" class="submitForm">
-
     <p>Full name: </p><input id="name" type="text" autofocus="true" name="name" required><br>
     <p>Email address: </p><input id="email" type="email" name="email" required><br>
     <p>Date of birth: </p><input id="date_of_birth" type="date" name="date_of_birth" required><br>
     <p>Phone Number (optional)</p> <input id="phone_number" type="tel" name="phone_number"><br>
+    <p>Gender:</p><br>  Male <input type="radio" name="gender" value="male" checked>
+                        Female <input type="radio" name="gender" value="female"><br><br>
     <button type="submit">Register</button>
 </form>

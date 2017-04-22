@@ -1,11 +1,12 @@
 var mongoose = require('mongoose'),
-    Promise = require('promise');
+    Promise = require('promise'),
+    email_handler = require('../controllers/app_routes/handlers/email_handler');
 
 var Appointment_Schema = new mongoose.Schema({
     dentist_id:String,
     customer_id:String,
-    start_time:Date,
-    end_time:Date
+    start:Date,
+    end:Date
 });
 
 //dentist model connected to mongoose database.
@@ -13,23 +14,55 @@ var Appointment_Model = mongoose.model('Appointment',Appointment_Schema);
 
 exports.create_appointment = function(data){
     return new Promise(function(reject,fulfill){
-        var appointment = new Appointment_Model({
-            dentist_id: data.dentist_id,
-            customer_id: data.customer_id,
-            start_time: data.start_time,
-            end_time: data.end_time
+        var new_appointment = new Appointment_Model({
+            dentist_id: data.appointment.dentist_id,
+            customer_id: data.appointment.customer_id,
+            start: data.appointment.start,
+            end: data.appointment.end
         });
-        appointment.save(function(err,appointment){
+        new_appointment.save(function(err,appointment){
             if(err)reject(err);
+            email_handler.sendBookedAppointmentNotification(data);
             fulfill(appointment);
         });
     });
 };
-exports.browse_appointments = function(id){
+
+exports.delete_appointment = function(id){
+    return new Promise(function(fulfill,reject){
+        Appointment_Model.findOneAndRemove({_id:id},function(err,appointment){
+            if(err)reject(err);
+            fulfill(appointment);
+        })
+    });
+};
+
+exports.get_appointments = function(id){
   return new Promise(function(fulfill,reject){
       Appointment_Model.find({dentist_id:id},function(err,list){
           if(err)reject (err);
               fulfill(list)
       })
   })
+};
+exports.check_availability = function(id, new_appointment){
+    return new Promise(function(fulfill,reject){
+        Appointment_Model.find({dentist_id:id},function(err,booked_appointments){
+            if(err) reject(err);
+            if(booked_appointments.length > 0){
+                var counter = 0;
+                booked_appointments.forEach(function(appointment){
+                    if(new_appointment.start < appointment.end.getTime() && new_appointment.end > appointment.start.getTime()){
+                        fulfill(false);
+                    }
+                    counter++;
+                    if(counter === booked_appointments.length){
+                        fulfill(new_appointment);
+                    }
+                });
+            }else{
+                fulfill(new_appointment);
+            }
+        })
+    });
 };
