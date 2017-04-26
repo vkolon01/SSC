@@ -1,16 +1,11 @@
 var express = require('express'),
     router = express.Router(),
     later = require('later'),
-    accountController = require('../../models/accountController'),
-    schedule = require('node-schedule'),
-    Promise = require('promise');
+    async = require('async'),
+    dataController = require('../../models/dataController'),
+    Promise = require('promise'),
+    schedule = require('./handlers/scheduler');
     moment  = require('moment');
-
-var startTime = new Date(Date.now() + 5000);
-var endTime = new Date(startTime.getTime() + 5000);
-var j = schedule.scheduleJob({ start: startTime, end: endTime, rule: '*/1 * * * * *' }, function(){
-    console.log('Time for tea!');
-});
 
 router.post('/create_appointment',function(req,res){
     var start_time = moment(req.body.available_day + ' ' + req.body.available_time,"ddd DD/MM/YY HH:mm").add(1,'hour'),
@@ -21,21 +16,30 @@ router.post('/create_appointment',function(req,res){
        start: start_time,
        end: end_time
     };
-    accountController.find_customer(req.body.customer_id).then(function(customer){
-        accountController.find_dentist(req.body.dentist_id).then(function(dentist){
-            accountController.create_appointment({appointment:appointment,customer:customer,dentist:dentist}).then(function(result){
-                res.status(200);
-                res.send({message:"The appointment is booked"});
-            },function(err){
-                console.log(err);
-            })
-        });
+
+    dataController.check_availability(appointment.dentist_id,{start:start_time,end:end_time}).then(function(available){
+        if(available){
+            dataController.find_customer(req.body.customer_id).then(function(customer){
+                dataController.find_dentist(req.body.dentist_id).then(function(dentist){
+                    dataController.create_appointment({appointment:appointment,customer:customer,dentist:dentist}).then(function(result){
+                        res.send({message:"The appointment is booked"});
+                    },function(err){
+                        console.log(err);
+                    })
+                });
+            });
+        }else{
+            res.send({message:"Please choose a different time"})
+        }
+    },function(err){
+
     });
+
 });
 
 router.post('/delete_appointment',function(req,res){
-   accountController.delete_appointment(req.body.id).then(function(appointment) {
-       generate_table(appointment.dentist_id).then(function(organised_list){
+    dataController.delete_appointment(req.body.id).then(function(appointment) {
+        get_appointments(appointment.dentist_id).then(function(organised_list){
            res.status(200);
            res.render('./content/appointment_table',{
                appointment_list: organised_list
@@ -45,7 +49,7 @@ router.post('/delete_appointment',function(req,res){
 });
 
 router.post('/browse_appointments',function(req,res){
-    generate_table(req.body.id).then(function(organised_list){
+    get_appointments(req.body.id).then(function(organised_list){
         res.status(200);
         res.render('./content/appointment_table',{
             appointment_list: organised_list
@@ -54,9 +58,7 @@ router.post('/browse_appointments',function(req,res){
 });
 
 router.post('/get_days',function(req,res){
-    var time_slot = req.body.time_slot,
-        dentist_id = req.body.dentist_id;
-        accountController.find_dentist(dentist_id).then(function(dentist){
+    var dentist_id = req.body.dentist_id;
             var search_from = moment(),
                 search_to = moment().add(1,'month'),
                 from = search_from,
@@ -64,7 +66,6 @@ router.post('/get_days',function(req,res){
 
             while (search_from < search_to) {
                 search_from.add(1,'day');
-               // console.log("today is " + from.format("ddd DD/MM/YY"));
                 days.push(from.format("ddd DD/MM/YY"));
                 from = search_from;
                 if (search_from >= search_to) {
@@ -73,18 +74,12 @@ router.post('/get_days',function(req,res){
                     res.end();
                 }
             }
-        },function(err){
-            console.log(err);
-            res.end();
-        })
 });
 
 router.post('/get_times',function(req,res){
     var time_slot = req.body.time_slot,
         dentist_id = req.body.dentist_id,
-        date = moment(req.body.date,"DD/MM/YY"),
-        today = moment("DD/MM/YY").format;
-        accountController.find_dentist(dentist_id).then(function(dentist){
+        date = moment(req.body.date,"DD/MM/YY");
             var search_from = moment(date),
                 search_to = date.add(1,'d'),
                 list = [];
@@ -95,13 +90,13 @@ router.post('/get_times',function(req,res){
                     res.end();
                 }else{
                     var start = moment(search_from),
-                        end = start.add(time_slot,'minutes');
-                    accountController.check_availability(dentist_id,{
+                        end = moment(start).add(time_slot,'minutes');
+                    dataController.check_availability(dentist_id,{
                         start:start,
                         end:end
-                    }).then(function(new_appointment){
-                        if(new_appointment){
-                            list.push(new_appointment.start.format("HH:mm"));
+                    }).then(function(available){
+                        if(available){
+                            list.push(start.utc().format("hh:mm"));
                         }
                         search_from.add(15,'minutes'); //adjusts the time selection window.
                         collect();
@@ -111,36 +106,39 @@ router.post('/get_times',function(req,res){
                     });
                 }
             }())
-
-        },function(err){
-            console.log(err);
-            res.end();
-        })
 });
 
-function generate_table(id){
+function get_appointments(id){
     return new Promise(function(fulfill,reject){
-        accountController.get_appointments(id).then(function(list){
-            if(list){
-                var organised_list = [],
-                    counter = 0;
+        dataController.get_appointments(id).then(function(list){
+            if(list.length > 0){
+                var organised_list = [];
                 list.forEach(function(appointment) {
-                    accountController.find_customer(appointment.customer_id).then(function (customer) {
-                        organised_list.push({
-                            id: appointment._id,
-                            date: moment(appointment.start).format('DD/MM/YY'),
-                            time: moment(appointment.start).format('HH:mm'),
-                            customer: customer,
-                            time_slot: moment(appointment.end - appointment.start).format('mm')
+                    dataController.find_dentist(appointment.dentist_id).then(function(dentist) {
+                        dataController.find_customer(appointment.customer_id).then(function(customer){
+                            organised_list.push({
+                                id: appointment._id,
+                                date: moment(appointment.start).utc().format('DD/MM/YY'),
+                                time: moment(appointment.start).utc().format('HH:mm'),
+                                dentist: dentist,
+                                customer: customer,
+                                time_slot: moment(appointment.end - appointment.start).format('mm')
+                            });
+                            setTimeout(function(){
+                                if(organised_list.length == list.length){fulfill(organised_list)}
+                            },100)
                         });
-                        counter++;
-                        if (counter == list.length) {
-                            fulfill(organised_list);
-                        }
+                        setTimeout(function(){ //forces the return of the list after one second
+                            fulfill(organised_list)
+                        },1000);
                     });
+
                 });
+            }else{
+                fulfill();
             }
         });
     });
 }
+exports.get_appointments = get_appointments;
 module.exports = router;

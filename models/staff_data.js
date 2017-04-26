@@ -18,6 +18,25 @@ var Account_Schema = new mongoose.Schema({
 });
 Account_Model = mongoose.model('login_data', Account_Schema);
 
+exports.check_username_availability = function(username){
+    return new Promise(function(fulfill,reject){
+        Account_Model.findOne({'username':username},function(err,user){
+            if(err)reject(err);
+            if(user){fulfill(false)}
+            else{fulfill(true)}
+        });
+    });
+};
+
+exports.check_email_availability = function(email){
+    return new Promise(function(fulfill,reject){
+        Account_Model.findOne({'account_info.email':email},function(err,user){
+            if(err)reject(err);
+            if(user){fulfill(false)}
+            else{fulfill(true)}
+        });
+    });
+};
 
 exports.create_account = function(form){
     return new Promise(function(fulfill,reject){
@@ -29,12 +48,13 @@ exports.create_account = function(form){
                 name: form.name,
                 phone_number: form.phone_number,
                 date_of_birth: form.date_of_birth,
-                email: form.email
+                email: form.email,
+                gender:form.gender
             }
         });
         account.save(function(err){
             if(err) return reject(err);
-            fulfill(console.log('Account have been saved'));
+            fulfill(account);
         })
     });
 };
@@ -57,5 +77,14 @@ exports.login = function(form){
             }
         })
     });
-
+};
+exports.delete_by_username = function(username){
+    return new Promise(function(fulfill,reject){
+        Account_Model.findOneAndRemove({'username':username},function(err,user){
+            if(err) throw err;
+            if(user){
+                fulfill(user);
+            }
+        })
+    })
 };

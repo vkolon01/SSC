@@ -7,12 +7,11 @@
   <h1><%= pageTitle %></h1>
   <p>Please login to use the system</p>
   <% include ./template/errors.ejs %>
-  <form action="/login/submit" method="post" class="submitForm">
+  <form action="/login" method="post" class="submitForm">
     <input id="username" type="text" autofocus="true" name="username"><br>
     <input id="password" type="password" name="password"><br>
 
     <button type="submit">login</button>
   </form>
-  <a href="/registration">Or register here</a>
   </body>
 </html>

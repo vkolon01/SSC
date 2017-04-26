@@ -12,7 +12,6 @@ router.use('*',function(req,res,next){
     next();
 });
 
-
 router.use('/home', require('./app_routes/home'));
 router.use('/users',require('./app_routes/users'));
 router.use('/customers',require('./app_routes/customers'));

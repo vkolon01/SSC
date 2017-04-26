@@ -1,18 +1,26 @@
 <form id="event">
-    <select id=dentist_id name="dentist_id" onchange="display_days()">
-        <option value="" selected > Select Dentist</option>
-        <%dentist_list.forEach(function(dentist){%>
-        <option value="<%=dentist.id%>"><%=dentist.account_info.name%></option>
-        <%});%>
-    </select>
+    <div>
+        Dentist:
+        <select id=dentist_id name="dentist_id" onchange="display_days()">
+            <option value="" selected > Select Dentist</option>
+            <%dentist_list.forEach(function(dentist){%>
+            <option value="<%=dentist.id%>"><%=dentist.account_info.name%></option>
+            <%});%>
+        </select>
+    </div>
+    <div>
+        Time required:
+        <select id="time_slot" name="time_slot" onchange="display_days()">
+            <option value="" selected> Time required </option>
+            <option value="15">15 minutes</option>
+            <option value="30">30 minutes</option>
+            <option value="45">45 minutes</option>
+            <option value="60">1 hour</option>
+        </select>
+    </div>
 
-    <select id="time_slot" name="time_slot" onchange="display_days()">
-        <option value="" selected> Time required </option>
-        <option value="15">15 minutes</option>
-        <option value="30">30 minutes</option>
-        <option value="45">45 minutes</option>
-        <option value="60">1 hour</option>
-    </select>
+
+
 
     <br><br>
 </form>
@@ -95,7 +103,7 @@
             contentType:"application/json",
             data: JSON.stringify({"time_slot": time_slot,"available_day": available_day,"available_time":available_time,"dentist_id": dentist_id,"customer_id": customer_id%>})
         }).done(function(result){
-            console.log(result.message);
+            alert(result.message);
         }).fail(function(err){
             console.log(err);
         });

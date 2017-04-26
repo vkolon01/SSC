@@ -1,7 +1,8 @@
 var express = require('express'),
     router = express.Router(),
-    accountController = require('../../models/accountController'),
+    dataController = require('../../models/dataController'),
     form_validation = require('./handlers/form_validation'),
+    email_handler = require('./handlers/email_handler'),
     moment = require('moment'),
     accessHandler = require('./handlers/roles'),
     userRole;
@@ -29,7 +30,7 @@ router.get('/registration',function(req,res){
 router.get('/:customer_id',function(req,res){
     var permission = accessHandler.ac.can(userRole).readAny('customer');
     if (permission.granted){
-        accountController.find_customer(req.params.customer_id).then(function(data){
+        dataController.find_customer(req.params.customer_id).then(function(data){
             //Customer data
             var customer_data = {
                 name : data.account_info.name,
@@ -44,7 +45,7 @@ router.get('/:customer_id',function(req,res){
 
             //Dentist list collection
             var list = [];
-            accountController.get_all_dentists().then(function(dentist_list){
+            dataController.get_all_dentists().then(function(dentist_list){
                 res.render('customer_page',{
                     pageTitle: "Customer page",
                     siteName: res.locals.siteTitle,
@@ -70,7 +71,7 @@ router.get('/:customer_id',function(req,res){
 router.get('/',function(req,res){
     var permission = accessHandler.ac.can(userRole).readAny('customer');
     if(permission.granted){
-        accountController.get_all_customers().then(function(data) {
+        dataController.get_all_customers().then(function(data) {
             var customer_list = [{}];
             data.forEach(function (customer) {
                 customer_list.push({
@@ -103,6 +104,7 @@ router.get('/',function(req,res){
 
 //Submission of new customer form. The form is validated, verified and used to create a new customer.
 router.post('/registration/submit',function(req,res){
+    console.log(req.body);
     var permission = accessHandler.ac.can(userRole).createAny('customer');
     if(permission.granted){
         var form = {
@@ -113,7 +115,7 @@ router.post('/registration/submit',function(req,res){
             gender : req.body.gender
         };
 
-        form_validation.validate_customer_form(form).then(function(data){accountController.create_customer_account(data).then(function(data){
+        form_validation.validate_customer_form(form).then(function(data){dataController.create_customer_account(data).then(function(data){
             res.redirect('/customers/'+data._id);
         },function(err){// Account creation error handling
             res.redirect('/customers/registration');
@@ -137,7 +139,7 @@ router.post('/edit/phone_number',function(req,res){
         var customer_id = req.body.customer_id,
             phone_number = req.body.phone_number;
         if(phone_number){
-            form_validation.validate_phone_number(phone_number).then(function(data){accountController.edit_customer_phone_number(data,customer_id).then(function(data){
+            form_validation.validate_phone_number(phone_number).then(function(data){dataController.edit_customer_phone_number(data,customer_id).then(function(data){
                     console.log(data);
                     res.redirect('/customers/'+customer_id);
                 },function(err){
@@ -163,7 +165,7 @@ router.post('/edit/email',function(req,res){
         var customer_id = req.body.customer_id,
             email = req.body.email;
         if(email){
-            form_validation.validate_email(email).then(function(data){accountController.edit_customer_email(data,customer_id).then(function(data){
+            form_validation.validate_email(email).then(function(data){dataController.edit_customer_email(data,customer_id).then(function(data){
                     console.log(data);
                     res.redirect('/customers/'+customer_id);
                 },function(err){
@@ -185,8 +187,18 @@ router.post('/edit/email',function(req,res){
 router.post('/delete',function(req,res){
     var permission = accessHandler.ac.can(userRole).deleteAny('customer');
     if(permission.granted){
-        accountController.delete_customer(req.body.customer_id).then(function(data){
-            console.log(data);
+        dataController.delete_customer(req.body.customer_id).then(function(customer){
+            dataController.get_appointments(customer._id).then(function(list){
+                console.log(list);
+                if(list.length > 0){
+                    list.forEach(function(appointment){
+                        dataController.find_dentist(appointment.dentist_id).then(function(dentist){
+                            email_handler.sendDentistCanceledAppointmentNotification({customer:customer, dentist: dentist});
+                            dataController.delete_appointment(appointment._id)
+                        });
+                    });
+                }
+            });
             res.redirect('/customers');
         },function(err){
             console.log(err);

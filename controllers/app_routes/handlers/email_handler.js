@@ -13,6 +13,56 @@ var transporter = nodemailer.createTransport({
     }
 });
 
+//dentists
+
+exports.sendDentistCanceledAppointmentNotification = function(data){
+    var email = {
+        from:'GiveMeYourEmailPlease@gmail.com',
+        to: data.dentist.account_info.email,
+        subject: COMPANY_NAME + ' Appointment cancelled',
+        text: 'Hello ' + data.dentist.account_info.name + '. We would like to inform you that your appointment with  Mr.' + data.customer.account_info.name + ' is cancelled.'
+    };
+    transporter.sendMail(email,function(err){if(err) console.log(err)})
+};
+
+exports.sendTomorrowAppointments = function(list,dentist){
+    var table = [];
+    list.forEach(function(appointment){
+        table.push('\n ' + appointment.time + ' | Appointment time: ' + appointment.time_slot + ' minutes. | Client name: ' + appointment.customer.account_info.name );
+    });
+    var email = {
+        from:'GiveMeYourEmailPlease@gmail.com',
+        to: dentist.account_info.email,
+        subject: COMPANY_NAME + ' Schedule for tomorrow',
+        text: 'Tomorrow you have the following meetings ' + table
+    };
+    transporter.sendMail(email,function(err){if(err) console.log(err)})
+};
+
+//customers
+exports.sendUpcomingAppointmentNotification = function(data){
+    var email = {
+        from:'GiveMeYourEmailPlease@gmail.com',
+        to: data.customer.account_info.email,
+        subject: COMPANY_NAME + ' Appointment reminder',
+        text: 'Hello ' + data.customer.account_info.name + '. We would like to remind you that you have an appointment tomorrow with ' + data.dentist.account_info.name +
+            ' at ' + moment(data.start).utc().format('HH:mm')
+    };
+    transporter.sendMail(email,function(err){if(err) console.log(err)})
+};
+
+exports.sendCanceledAppointmentNotification = function(data){
+    var email = {
+        from:'GiveMeYourEmailPlease@gmail.com',
+        to: data.customer.account_info.email,
+        subject: COMPANY_NAME + ' Appointment cancelled',
+        text: 'Hello ' + data.customer.account_info.name + '. We would like to inform you that your appointment at ' + COMPANY_NAME + ' with  Dr.' + data.dentist.account_info.name + ' is cancelled.' +
+        ' We apologise for any inconvenience  caused.'
+    };
+    transporter.sendMail(email,function(err){if(err) console.log(err)})
+};
+
+
 exports.sendGreetingEmail = function(account_data){
     if(account_data.role == 'customer'){
         var email = {
@@ -34,6 +84,7 @@ exports.sendGreetingEmail = function(account_data){
     }
     transporter.sendMail(email,function(err){if(err) console.log(err)})
 };
+
 exports.sendChangeEmailNotification = function(data,new_email){
     if(data.role == 'customer'){
         var email = {
@@ -55,6 +106,7 @@ exports.sendChangeEmailNotification = function(data,new_email){
 
     transporter.sendMail(email,function(err){if(err) console.log(err)})
 };
+
 exports.sendChangePhoneNumberNotification = function(account,new_phone_number){
     var email = {
         from:'GiveMeYourEmailPlease@gmail.com',
@@ -65,6 +117,7 @@ exports.sendChangePhoneNumberNotification = function(account,new_phone_number){
     };
     transporter.sendMail(email,function(err){if(err) console.log(err)})
 };
+
 exports.sendRemovedAccountNotification = function(removed_account){
     if(removed_account.role == 'customer'){
         var email = {
@@ -88,6 +141,7 @@ exports.sendRemovedAccountNotification = function(removed_account){
     }
     transporter.sendMail(email,function(err){if(err) console.log(err)});
 };
+
 exports.sendBookedAppointmentNotification = function(data){
     var appointment = data.appointment,
         customer = data.customer,
@@ -97,7 +151,7 @@ exports.sendBookedAppointmentNotification = function(data){
             to: customer.account_info.email,
             subject: 'Booked appointment at ' + COMPANY_NAME,
             text: 'Hello ' + customer.account_info.name + '. You have booked an appointment with doctor ' + dentist.account_info.name  + ' on ' + appointment.start.format('ddd DD/MM/YYYY') + ' at ' + appointment.start.format('HH:mm')
-            + 'Thank you.'
+            + ' Thank you.'
         };
     transporter.sendMail(email,function(err){if(err) console.log(err)});
 };

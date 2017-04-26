@@ -32,6 +32,11 @@
     "validator": "^7.0.0"
   },
   "devDependencies": {
-    "express-validator": "^3.1.2"
+    "chai": "^3.5.0",
+    "chai-http": "^3.0.0",
+    "express-validator": "^3.1.2",
+    "mocha": "^3.3.0",
+    "should": "^11.2.1",
+    "supertest": "^3.0.0"
   }
 }

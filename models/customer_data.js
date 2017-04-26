@@ -12,7 +12,8 @@ var Customer_Schema = new mongoose.Schema({
         },
         _id:String,
         registration_date: Date,
-        account_info: Account_Info
+        account_info: Account_Info,
+        medicalHistory: [String]
     });
 
 //customer model connected to mongoose database.
@@ -94,6 +95,7 @@ exports.find_account = function(customer_id){
 
 exports.find_customer_by_email = function(email){
     return new Promise(function(fulfill,reject){
+        /*
             Customer_Model.find(function(err,list){
                 if(err) reject('Error has occurred');
                 if(list) {
@@ -101,6 +103,7 @@ exports.find_customer_by_email = function(email){
                 }else{
                     reject('No customer data is found')}
             })
+            */
         Customer_Model.findOne({
             account_info:{email:email}
         },function(err,customer_data){
@@ -132,7 +135,7 @@ exports.delete_customer = function(customer_id){
         Customer_Model.findOneAndRemove({'_id':customer_id},function(err,removed_account){
             //Store deleted_account in a log file.
             email_handler.sendRemovedAccountNotification(removed_account);
-            fulfill('The account has been removed');
+            fulfill(removed_account);
         })
     })
 };

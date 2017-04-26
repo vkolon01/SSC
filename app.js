@@ -13,6 +13,7 @@ var validator = require('express-validator');
 //database connection
 var mongoose = require('mongoose'),
     mongoBase = require('connect-mongo')(session);
+mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost/SSC');
 
 // view engine setup
@@ -70,9 +71,4 @@ Giving the app access to the following variables.
  */
 app.set('port',port);
 
-var server = app.listen(app.get('port'),function(){
-  console.log('listening on port ' + app.get('port'))
-});
-
-
-reload(server,app);
+module.exports = app;

@@ -11,6 +11,7 @@
     <div class="main_content">
 
         <div class="account details">
+            <input type="hidden" id='id' name="id" value="<%=dentist_data.id%>">
             <h3>Name: <%=dentist_data.name%></h3>
             <%if(typeof dentist_data.gender !== 'undefined'){%><h4>Gender: <%=dentist_data.gender%></h4><%}%>
             <h4>ID: <%=dentist_data.id%></h4>
@@ -33,62 +34,9 @@
         <section id="appointment_table"></section>
     </div>
 </div>
-
 <script>
-
-    function change_phone_number(){
-        document.getElementById("phone_number").style.display = "none";
-        document.getElementById("edit_phone_number").style.display = "";
-    }
-    function change_email(){
-        document.getElementById("email_address").style.display = "none";
-        document.getElementById("edit_email").style.display = "";
-    }
-    function delete_account(){
-        if(document.getElementById("confirm_delete").style.display == "none"){
-            document.getElementById("confirm_delete").style.display = "";
-            document.getElementById("delete").style.display = "none";
-        }else{
-            document.getElementById("confirm_delete").style.display = "none";
-            document.getElementById("delete").style.display = "";
-        }
-    }
-    function new_appointment(){
-        if(document.getElementById("appointment_form").style.display == "none"){
-            document.getElementById("appointment_form").style.display = "";
-            document.getElementById("new_appointment").style.display = "none";
-        }else{
-            document.getElementById("appointment_form").style.display = "none";
-            document.getElementById("new_appointment").style.display = "";
-        }
-    }
-    function delete_appointment(id){
-        $.ajax({
-            type: 'POST',
-            url: '/appointments/delete_appointment',
-            contentType:"application/json",
-            data: JSON.stringify({"id":id})
-        }).done(function(table){
-            update_table(table);}
-        ).fail(function(err){
-            console.log(err);
-        });
-    }
-    function update_table(table){
-        document.getElementById("appointment_table").innerHTML = table;
-    }
-    function browse_appointments(){
-        $.ajax({
-            type: 'POST',
-            url: '/appointments/browse_appointments',
-            contentType:"application/json",
-            data: JSON.stringify({"id": document.getElementById('dentist_id').value})
-        }).done(function(table){
-            update_table(table);}
-        ).fail(function(err){
-            console.log(err);
-        });
-    }
+    <% include scripts/account_edit.js %>
+    <% include scripts/appointment_handling.js %>
 </script>
 </body>
 </html>

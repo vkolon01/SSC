@@ -37,13 +37,24 @@ exports.delete_appointment = function(id){
     });
 };
 
+
+
 exports.get_appointments = function(id){
   return new Promise(function(fulfill,reject){
-      Appointment_Model.find({dentist_id:id},function(err,list){
+      Appointment_Model.find({$or:[{dentist_id:id},{customer_id:id}]},function(err,list){
           if(err)reject (err);
               fulfill(list)
       })
   })
+};
+
+exports.get_all_appointments = function(){
+    return new Promise(function(fulfill,reject){
+        Appointment_Model.find(function(err,list){
+            if(err)reject (err);
+            fulfill(list)
+        })
+    })
 };
 exports.check_availability = function(id, new_appointment){
     return new Promise(function(fulfill,reject){
@@ -52,16 +63,16 @@ exports.check_availability = function(id, new_appointment){
             if(booked_appointments.length > 0){
                 var counter = 0;
                 booked_appointments.forEach(function(appointment){
-                    if(new_appointment.start < appointment.end.getTime() && new_appointment.end > appointment.start.getTime()){
+                    if(new_appointment.start.valueOf() < appointment.end.getTime() && new_appointment.end.valueOf() > appointment.start.getTime()){
                         fulfill(false);
                     }
                     counter++;
                     if(counter === booked_appointments.length){
-                        fulfill(new_appointment);
+                        fulfill(true);
                     }
                 });
             }else{
-                fulfill(new_appointment);
+                fulfill(true);
             }
         })
     });

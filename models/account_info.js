@@ -18,8 +18,7 @@ var Account_Info = new mongoose.Schema({
         default: null,
         unique: true
     },
-    gender:String,
-    title:String
+    gender:String
 });
 
 exports.account_data = function(){

@@ -17,8 +17,11 @@ exports.edit_customer_email = function(email,customer_id){return customer_data.e
 exports.delete_customer = function(customer_id){return customer_data.delete_customer(customer_id)};
 
 //staff_data
+exports.delete_by_username = function(username){return staff_data.delete_by_username(username)};
 exports.create_staff_account = function(form){return staff_data.create_account(form)};
 exports.login =function(form){return staff_data.login(form)};
+exports.check_username_availability = function(username){return staff_data.check_username_availability(username)};
+exports.check_staff_email_availability = function(email){return staff_data.check_email_availability(email)};
 
 //dentist_data
 exports.create_dentist_account = function(form){return dentist_data.create_account(form)};
@@ -32,4 +35,5 @@ exports.delete_dentist = function(id){return dentist_data.delete(id)};
 exports.create_appointment = function(data){return appointment_data.create_appointment(data)};
 exports.check_availability = function(id,appointment){return appointment_data.check_availability(id,appointment)};
 exports.get_appointments = function(id){return appointment_data.get_appointments(id)};
+//exports.get_appointments = function(){return appointment_data.get_appointments()};
 exports.delete_appointment = function(data){return appointment_data.delete_appointment(data)};

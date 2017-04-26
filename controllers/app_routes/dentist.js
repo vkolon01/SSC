@@ -1,35 +1,63 @@
 var express = require('express'),
     router = express.Router(),
-    accountController = require('../../models/accountController'),
+    dataController = require('../../models/dataController'),
     form_validation = require('./handlers/form_validation'),
+    email_handler = require('./handlers/email_handler'),
     moment = require('moment'),
     accessHandler = require('./handlers/roles'),
     userRole;
+
 router.use(function(req,res,next){
     userRole = res.locals.userRole;
     next();
 });
 
-router.get('/registration',function(req,res){
-    var permission = accessHandler.ac.can(userRole).createAny('dentist');
-    if(permission.granted){
-        res.render('dentist_registration',{
-            pageTitle: "Dentist registration",
-            siteName: res.locals.siteTitle,
-            errors: req.session.errors,
-            user: req.session.user,
-            role: req.session.role
+//registration route
+router.route('/registration')
+    .all(function(req,res,next){
+        var permission = accessHandler.ac.can(userRole).createAny('dentist');
+        if(permission.granted) {
+            next();
+        }else{
+            res.status(403).send(accessHandler.errors.read_page).end();
+        }
+    })
+    .get(function(req,res){
+            res.render('dentist_registration',{
+                pageTitle: "Dentist registration",
+                siteName: res.locals.siteTitle,
+                errors: req.session.errors,
+                user: req.session.user,
+                role: req.session.role
+            });
+    })
+    .post(function(req,res){
+        var form = {
+            name: req.body.name,
+            email: req.body.email,
+            gender: req.body.gender,
+            date_of_birth: req.body.date_of_birth,
+            phone_number: req.body.phone_number
+        };
+        form_validation.validate_dentist_form(form).then(function(data){dataController.create_dentist_account(data).then(function(data){
+            res.redirect('/');
+        },function(err){//Account creation error
+            res.redirect('/dentist/registration');
+            done(console.error(err));
         });
-    }else{
-        res.status(403).send(accessHandler.errors.read_page).end();
-    }
-});
+        },function(err){//Form errors
+            req.session.errors = err;
+            res.redirect('/dentist/registration');
+            console.error(err);
+            done();
+        })
+    });
 
 router.get('/:dentist_id',function(req,res){
     var permission = accessHandler.ac.can(userRole).readAny('dentist');
     console.log(userRole);
     if (permission.granted){
-        accountController.find_dentist(req.params.dentist_id).then(function(data){
+        dataController.find_dentist(req.params.dentist_id).then(function(data){
             var dentist_data = {
                 name : data.account_info.name,
                 gender: data.account_info.gender.charAt(0).toUpperCase() + data.account_info.gender.slice(1),
@@ -58,7 +86,7 @@ router.get('/:dentist_id',function(req,res){
 router.get('/',function(req,res){
     var permission = accessHandler.ac.can(userRole).readAny('dentist');
     if(permission.granted){
-        accountController.get_all_dentists().then(function(data) {
+        dataController.get_all_dentists().then(function(data) {
             var list = [{}];
 
             data.forEach(function (account) {
@@ -91,8 +119,17 @@ router.get('/',function(req,res){
 router.post('/delete',function(req,res){
     var permission = accessHandler.ac.can(userRole).deleteAny('dentist');
     if(permission.granted){
-        accountController.delete_dentist(req.body.dentist_id).then(function(data){
-            console.log(data);
+        dataController.delete_dentist(req.body.dentist_id).then(function(dentist){
+            dataController.get_appointments(dentist._id).then(function(list){
+               if(list){
+                   list.forEach(function(appointment){
+                       dataController.find_customer(appointment.customer_id).then(function(customer){
+                           email_handler.sendDentistCanceledAppointmentNotification({customer:customer, dentist: dentist});
+                           dataController.delete_appointment(appointment._id)
+                       });
+                   });
+               }
+            });
             res.redirect('/dentist');
         },function(err){
             console.log(err);
@@ -104,14 +141,14 @@ router.post('/delete',function(req,res){
 
 });
 
-//Modification of dentist data
+//Modification of dentist account
 router.post('/edit/phone_number',function(req,res){
     var permission = accessHandler.ac.can(userRole).updateAny('dentist');
     if(permission.granted){
         var id = req.body.id,
             phone_number = req.body.phone_number;
         if(phone_number){
-            form_validation.validate_phone_number(phone_number).then(function(data){accountController.edit_dentist_phone_number(data,id).then(function(data){
+            form_validation.validate_phone_number(phone_number).then(function(data){dataController.edit_dentist_phone_number(data,id).then(function(data){
                     console.log(data);
                     res.redirect('/dentist/'+id);
                 },function(err){
@@ -129,13 +166,14 @@ router.post('/edit/phone_number',function(req,res){
         res.status(403).send(accessHandler.errors.other).end();
     }
 });
+
 router.post('/edit/email',function(req,res){
     var permission = accessHandler.ac.can(userRole).updateAny('dentist');
     if(permission.granted){
         var id = req.body.id,
             email = req.body.email;
         if(email){
-            form_validation.validate_email(email).then(function(data){accountController.edit_dentist_email(data,id).then(function(data){
+            form_validation.validate_email(email).then(function(data){dataController.edit_dentist_email(data,id).then(function(data){
                     console.log(data);
                     res.redirect('/dentist/'+id);
                 },function(err){
@@ -152,34 +190,6 @@ router.post('/edit/email',function(req,res){
     }else{
         res.status(403).send(accessHandler.errors.other).end();
     }
-});
-
-router.post('/registration/submit',function(req,res){
-    var permission = accessHandler.ac.can(userRole).createAny('dentist');
-    if(permission.granted){
-        var form = {
-            name: req.body.name,
-            email: req.body.email,
-            gender: req.body.gender,
-            date_of_birth: req.body.date_of_birth,
-            phone_number: req.body.phone_number
-        };
-        form_validation.validate_dentist_form(form).then(function(data){accountController.create_dentist_account(data).then(function(data){
-            res.redirect('/');
-        },function(err){//Account creation error
-            res.redirect('/dentist/registration');
-            done(console.error(err));
-        });
-        },function(err){//Form errors
-            req.session.errors = err;
-            res.redirect('/dentist/registration');
-            console.error(err);
-            done();
-        })
-    }else{
-        res.status(403).send(accessHandler.errors.other).end();
-    }
-
 });
 
 module.exports = router;

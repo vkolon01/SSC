@@ -8,18 +8,13 @@ body{
     margin-left: 10em;
     font-size: 16px;
 }
-header{
-  border: 0px solid black;
-  max-height:61px;
-  width: 50em;
-}
 .container{
   border-color: black;
-  width:80%;
+  width:100%;
   height: auto;
 }
 .main_content{
-  width: 80%;
+  width: 100%;
 }
 .sidebar_menu{
   float:left;
@@ -57,7 +52,7 @@ a{
 }
 .dropdown_content{
   display:none;
-  position:absolute;
+  position: absolute;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
 }

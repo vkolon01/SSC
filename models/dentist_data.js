@@ -30,6 +30,7 @@ var Dentist_Schema = new mongoose.Schema({
     _id:String,
     registration_date: Date,
     holidays:[Date],
+    contract_hours:Number,
     working_days: working_days,
     account_info: Account_Info
 });
@@ -96,7 +97,7 @@ exports.delete = function(id){
         Dentist_Model.findOneAndRemove({'_id':id},function(err,removed_account){
             //Store deleted_account in a log file.
             email_handler.sendRemovedAccountNotification(removed_account);
-            fulfill('The account has been removed');
+            fulfill(removed_account);
         })
     })
 };

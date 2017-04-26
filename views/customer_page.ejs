@@ -10,6 +10,7 @@
     <h1><%= pageTitle %></h1>
     <div class="main_content">
         <div class="account details">
+            <input type="hidden" id='id' name="id" value="<%=customer_data.id%>">
             <h3>Name: <%=customer_data.name%></h3>
             <h4>Gender: <%=customer_data.gender%></h4>
             <h4>ID: <%=customer_data.id%></h4>
@@ -29,43 +30,23 @@
         </div>
         <div>
             <input id="delete" type="button" onclick="delete_account();" value="Delete account">
+            <input id="browse_appointments" type="button" onclick="browse_appointments();" value="Browse Appointments">
             <input id="new_appointment" type="button" onclick="new_appointment();" value="New Appointment">
         </div>
+        <br>
         <div id="appointment_form" style="display:none">
             <% include forms/appointment_form.ejs %> <br>
             <input id="cancel" type="button" onclick="new_appointment();" value="Cancel">
             </div>
 
+        <section id="appointment_table"></section>
+
     </div>
 </div>
 
 <script>
-    function change_phone_number(){
-        document.getElementById("phone_number").style.display = "none";
-        document.getElementById("edit_phone_number").style.display = "";
-    }
-    function change_email(){
-        document.getElementById("email_address").style.display = "none";
-        document.getElementById("edit_email").style.display = "";
-    }
-    function delete_account(){
-        if(document.getElementById("confirm_delete").style.display == "none"){
-            document.getElementById("confirm_delete").style.display = "";
-            document.getElementById("delete").style.display = "none";
-        }else{
-            document.getElementById("confirm_delete").style.display = "none";
-            document.getElementById("delete").style.display = "";
-        }
-    }
-    function new_appointment(){
-        if(document.getElementById("appointment_form").style.display == "none"){
-            document.getElementById("appointment_form").style.display = "";
-            document.getElementById("new_appointment").style.display = "none";
-        }else{
-            document.getElementById("appointment_form").style.display = "none";
-            document.getElementById("new_appointment").style.display = "";
-        }
-    }
+    <% include scripts/account_edit.js %>
+    <% include scripts/appointment_handling.js %>
 </script>
 </body>
 </html>

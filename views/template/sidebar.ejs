@@ -1,7 +1,7 @@
 <div class="sidebar_menu">
     <%if(typeof user !== "undefined" && user){%>
         <div class="dropdown">
-            <a href="#" class="dropdown_button"> <p><%=role%></p> <%=user%>  </a>
+            <a href="#" class="dropdown_button"> <p>Role: <%=role%></p><p>User: <%=user%> </p> </a>
             <div class="dropdown_content">
                 <a href="/home/logOut" title="Log Out">LogOut</a>
             </div>
@@ -25,8 +25,6 @@
                 <a href="#">History Appointments</a>
             </div>
         </div>
-        <a href = "#">Link</a>
-        <a href = "#">Link</a>
 
     <%}else{%>
         <a href="/login" title="Login">Login</a>

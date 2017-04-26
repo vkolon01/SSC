@@ -3,7 +3,8 @@ var express = require('express'),
     Promise = require('promise'),
     crypt = require('password-hash-and-salt'),
     async = require('async'),
-    moment = require('moment');
+    moment = require('moment'),
+    dataController = require('../../../models/dataController');
 
 exports.validate_dentist_form = function(form){
     return new Promise(function (fulfill, reject) {
@@ -99,15 +100,23 @@ exports.validate_staff_form = function(form){
                 }
             },
             function(callback){
+                var counter = 0;
                 if(!validator.isAlpha(form.name.replace(' ',''))){errors.push('Please enter a valid name')}
                 if(!validator.isLength(form.name,nameOptions)){errors.push('The name must be between 3 and 50 characters.')}
                 if(validator.isEmpty(form.email) || !validator.isEmail(form.email)){errors.push('Enter a valid email address.')}if(validator.isEmpty(form.username) || !validator.isLength(form.username,usernameOptions)){errors.push('The username must be between 5 and 20 characters.')}
                 if(!validator.isAlphanumeric(form.username)){errors.push('The username can only contain alphanumerical characters only')}
+                dataController.check_username_availability(form.username).then(function(available){
+                    if(!available){errors.push('Username Taken'); counter++}
+                });
+                dataController.check_staff_email_availability(form.email).then(function(available){
+                    if(!available){errors.push('Email is Taken'); counter++}
+                });
                 callback();
             }
         ],
             function(err){
                 if(errors.length > 0) return reject(errors);
+
                 fulfill(form);
             }
         );
