@@ -5,6 +5,7 @@
 var staff_data = require('./staff_data'),
     customer_data = require('./customer_data'),
     dentist_data = require('./dentist_data'),
+    settings_data = require('./settings_data'),
     appointment_data = require('./appointment_data');
 
 //customer_data
@@ -37,3 +38,8 @@ exports.check_availability = function(id,appointment){return appointment_data.ch
 exports.get_appointments = function(id){return appointment_data.get_appointments(id)};
 //exports.get_appointments = function(){return appointment_data.get_appointments()};
 exports.delete_appointment = function(data){return appointment_data.delete_appointment(data)};
+
+//settings
+exports.create_settings_file = function(){return settings_data.create_settings_file()};
+exports.update_business_working_hours = function(data){return settings_data.update_working_hours(data)};
+exports.get_business_working_hours =function(){return settings_data.get_working_hours()};

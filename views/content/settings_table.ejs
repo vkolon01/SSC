@@ -1,0 +1,29 @@
+<h2>----Working hours----</h2>
+<%var weekday = 0%>
+<br>
+<%weekdays.forEach(function(day){%>
+
+<ul class="working_hours_settings">
+    <h4><%=day%></h4>
+    <h5>Opening</h5>
+    <li id="opening">
+        <select id="o<%=day%>" name="opening_time" onchange="update_working_day({hours: {opening: document.getElementById('o<%=day%>').value,closing: document.getElementById('c<%=day%>').value},day: this.id,opening: true})">
+            <%for(var i = 0;i < 25; i++){%>
+            <%if(i <= working_days[weekday].closing){%>
+            <option  <%if(working_days[weekday].opening == i){%>selected<%}%>   value=<%=i%>><%=i%>:00</option>
+            <%}}%>
+        </select>
+    </li>
+    <h5>Closing</h5>
+    <li id="opening">
+        <select id="c<%=day%>" name="closing_time" onchange="update_working_day({hours: {opening: document.getElementById('o<%=day%>').value,closing: document.getElementById('c<%=day%>').value},day: this.id,opening: false})">
+            <%for(var i = 0;i < 25; i++){%>
+            <%if(i >= working_days[weekday].opening){%>
+            <option <%if(working_days[weekday].closing == i){%>selected<%}%> value=<%=i%>> <%=i%>:00</option>
+            <%}}%>
+        </select>
+    </li>
+</ul>
+<%
+    weekday++
+})%>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <% include template/head.ejs %>
+</head>
+<body>
+<div class="container">
+    <h1><%= pageTitle %></h1>
+    <% include template/errors.ejs %>
+    <% include template/sidebar.ejs %>
+    <div id="working_hours_settings">
+
+    </div>
+</div>
+
+<script>
+<%include scripts/settings.js%>
+</script>
+
+</body>
+</html>

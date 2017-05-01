@@ -13,18 +13,25 @@
             </div>
         </div>
         <div class="dropdown">
-            <a href="/dentist" class="dropdown_button">Dentists</a>
+            <a href="#" class="dropdown_button">Staff</a>
             <div class="dropdown_content">
+                <a href="/dentist">Browse all dentists</a>
                 <a href="/dentist/registration">Register new Dentist</a>
+                <%if(role == 'assistant_manager' || role == 'general_manager' || role == 'admin'){%>
+                <a href="/registration">Register new staff account</a>
+                <%}%>
             </div>
         </div>
         <div class="dropdown">
-            <a href="#" class="dropdown_button">Appointments</a>
+            <a href="" class="dropdown_button">Appointments</a>
             <div class="dropdown_content">
                 <a href="#">Browse Appointments</a>
                 <a href="#">History Appointments</a>
             </div>
         </div>
+    <%if(role == 'general_manager' || role == 'admin'){%>
+    <a href="/settings">Settings</a>
+    <%}%>
 
     <%}else{%>
         <a href="/login" title="Login">Login</a>

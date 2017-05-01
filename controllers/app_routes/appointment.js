@@ -7,6 +7,7 @@ var express = require('express'),
     schedule = require('./handlers/scheduler');
     moment  = require('moment');
 
+
 router.post('/create_appointment',function(req,res){
     var start_time = moment(req.body.available_day + ' ' + req.body.available_time,"ddd DD/MM/YY HH:mm").add(1,'hour'),
         end_time = moment(start_time).add(req.body.time_slot,'minutes');
@@ -77,35 +78,39 @@ router.post('/get_days',function(req,res){
 });
 
 router.post('/get_times',function(req,res){
-    var time_slot = req.body.time_slot,
-        dentist_id = req.body.dentist_id,
-        date = moment(req.body.date,"DD/MM/YY");
-            var search_from = moment(date),
-                search_to = date.add(1,'d'),
-                list = [];
-            (function collect(){
-                if (search_from >= search_to) {
-                    res.status(200);
-                    res.render('./content/get_hours',{list: list});
-                    res.end();
-                }else{
-                    var start = moment(search_from),
-                        end = moment(start).add(time_slot,'minutes');
-                    dataController.check_availability(dentist_id,{
-                        start:start,
-                        end:end
-                    }).then(function(available){
+    dataController.get_business_working_hours().then(function(working_days){
+        var time_slot = req.body.time_slot,
+            dentist_id = req.body.dentist_id,
+            date = moment(req.body.date,"DD/MM/YY");
+        var search_from = moment(date),
+            search_to = date.add(1,'d'),
+            list = [];
+        (function collect(){
+            if (search_from >= search_to) {
+                res.status(200);
+                res.render('./content/get_hours',{list: list});
+                res.end();
+            }else{
+                var start = moment(search_from).utc(),
+                    end = moment(start).add(time_slot,'minutes').utc();
+                if(start.hours() >=  working_days[start.weekday()].opening && end.hours() <=  working_days[start.weekday()].closing -1 ){
+                    console.log(start.weekday());
+                    console.log(start.hours() + ' >= ' +  working_days[start.weekday()].opening + ' && ' + end.hours() + ' <= ' + (working_days[start.weekday()].closing -1) );
+                    dataController.check_availability(dentist_id,{start:start, end:end}).then(function(available){
                         if(available){
                             list.push(start.utc().format("hh:mm"));
+                            console.log(start.utc().format("hh:mm"));
                         }
                         search_from.add(15,'minutes'); //adjusts the time selection window.
                         collect();
-                    },function(err){
-                        console.log(err);
-                        res.end();
                     });
+                }else{
+                    search_from.add(15,'minutes'); //adjusts the time selection window.
+                    collect();
                 }
-            }())
+            }
+        }())
+    });
 });
 
 function get_appointments(id){

@@ -6,11 +6,12 @@ var schedule = require('node-schedule'),
 
 
 var rule = new schedule.RecurrenceRule();
-rule.second = [30,0];
+rule.second = [30,0, 15, 45];
 
 var j = schedule.scheduleJob(rule,function(){
-    //send_appointment_notifications(new moment());
+    send_appointment_notifications(new moment());
     get_all_clients_for_tomorrow(new moment());
+    dataController.create_settings_file();
 });
 
 var get_all_clients_for_tomorrow = function(today){
@@ -25,7 +26,7 @@ var get_all_clients_for_tomorrow = function(today){
                         tomorrow_appointments.push(appointment);
                     }
                     setTimeout(function () {
-                        if(!sent){
+                        if(!sent && tomorrow_appointments.length > 0){
                             sent = true;
                             email_handler.sendTomorrowAppointments(tomorrow_appointments,dentist);
                         }

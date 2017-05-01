@@ -34,6 +34,7 @@ body{
   text-decoration: none;
   display: block;
 }
+
 .sidebar_menu a:hover{
   background-color: #F3FFD8;
   display: block;
@@ -41,6 +42,17 @@ body{
 a{
   color: black;
 }
+
+.working_hours_settings{
+  display:inline-block;
+  list-style-type: none;
+
+}
+.working_hours_settings li{
+  display:inline-block;
+  list-style-type: none;
+}
+
 #indexPage{
   margin: 10px auto;
   border: 1px solid gray;
