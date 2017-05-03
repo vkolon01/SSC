@@ -20,7 +20,7 @@ exports.sendDentistCanceledAppointmentNotification = function(data){
         from:'GiveMeYourEmailPlease@gmail.com',
         to: data.dentist.account_info.email,
         subject: COMPANY_NAME + ' Appointment cancelled',
-        text: 'Hello ' + data.dentist.account_info.name + '. We would like to inform you that your appointment with  Mr.' + data.customer.account_info.name + ' is cancelled.'
+        text: 'Hello ' + data.dentist.account_info.name + '. We would like to inform you that your appointment with  Mr.' + data.client.account_info.name + ' is cancelled.'
     };
     transporter.sendMail(email,function(err){if(err) console.log(err)})
 };
@@ -28,7 +28,7 @@ exports.sendDentistCanceledAppointmentNotification = function(data){
 exports.sendTomorrowAppointments = function(list,dentist){
     var table = [];
     list.forEach(function(appointment){
-        table.push('\n ' + appointment.time + ' | Appointment time: ' + appointment.time_slot + ' minutes. | Client name: ' + appointment.customer.account_info.name );
+        table.push('\n ' + appointment.time + ' | Appointment time: ' + appointment.time_slot + ' minutes. | Client name: ' + appointment.client.account_info.name );
     });
     var email = {
         from:'GiveMeYourEmailPlease@gmail.com',
@@ -39,13 +39,13 @@ exports.sendTomorrowAppointments = function(list,dentist){
     transporter.sendMail(email,function(err){if(err) console.log(err)})
 };
 
-//customers
-exports.sendUpcomingAppointmentNotification = function(data){
+//clients
+exports.send_reminder = function(data){
     var email = {
         from:'GiveMeYourEmailPlease@gmail.com',
-        to: data.customer.account_info.email,
+        to: data.client.account_info.email,
         subject: COMPANY_NAME + ' Appointment reminder',
-        text: 'Hello ' + data.customer.account_info.name + '. We would like to remind you that you have an appointment tomorrow with ' + data.dentist.account_info.name +
+        text: 'Hello ' + data.client.account_info.name + '. We would like to remind you that you have an appointment tomorrow with ' + data.dentist.account_info.name +
             ' at ' + moment(data.start).utc().format('HH:mm')
     };
     transporter.sendMail(email,function(err){if(err) console.log(err)})
@@ -54,17 +54,17 @@ exports.sendUpcomingAppointmentNotification = function(data){
 exports.sendCanceledAppointmentNotification = function(data){
     var email = {
         from:'GiveMeYourEmailPlease@gmail.com',
-        to: data.customer.account_info.email,
+        to: data.client.account_info.email,
         subject: COMPANY_NAME + ' Appointment cancelled',
-        text: 'Hello ' + data.customer.account_info.name + '. We would like to inform you that your appointment at ' + COMPANY_NAME + ' with  Dr.' + data.dentist.account_info.name + ' is cancelled.' +
-        ' We apologise for any inconvenience  caused.'
+        text: 'Hello ' + data.client.account_info.name + '. We would like to inform you that your appointment at ' + COMPANY_NAME + ' with  Dr.' + data.dentist.account_info.name + ' is cancelled.' +
+        ' We apologise for any inconvenience caused.'
     };
     transporter.sendMail(email,function(err){if(err) console.log(err)})
 };
 
 
 exports.sendGreetingEmail = function(account_data){
-    if(account_data.role == 'customer'){
+    if(account_data.role == 'client'){
         var email = {
             from:'GiveMeYourEmailPlease@gmail.com',
             to: account_data.account_info.email,
@@ -86,7 +86,7 @@ exports.sendGreetingEmail = function(account_data){
 };
 
 exports.sendChangeEmailNotification = function(data,new_email){
-    if(data.role == 'customer'){
+    if(data.role == 'client'){
         var email = {
             from:'GiveMeYourEmailPlease@gmail.com',
             to: new_email,
@@ -119,7 +119,7 @@ exports.sendChangePhoneNumberNotification = function(account,new_phone_number){
 };
 
 exports.sendRemovedAccountNotification = function(removed_account){
-    if(removed_account.role == 'customer'){
+    if(removed_account.role == 'client'){
         var email = {
             from:'GiveMeYourEmailPlease@gmail.com',
             to: removed_account.account_info.email,
@@ -144,13 +144,13 @@ exports.sendRemovedAccountNotification = function(removed_account){
 
 exports.sendBookedAppointmentNotification = function(data){
     var appointment = data.appointment,
-        customer = data.customer,
+        client = data.client,
         dentist = data.dentist,
         email = {
             from:'GiveMeYourEmailPlease@gmail.com',
-            to: customer.account_info.email,
+            to: client.account_info.email,
             subject: 'Booked appointment at ' + COMPANY_NAME,
-            text: 'Hello ' + customer.account_info.name + '. You have booked an appointment with doctor ' + dentist.account_info.name  + ' on ' + appointment.start.format('ddd DD/MM/YYYY') + ' at ' + appointment.start.format('HH:mm')
+            text: 'Hello ' + client.account_info.name + '. You have booked an appointment with doctor ' + dentist.account_info.name  + ' on ' + appointment.start.format('ddd DD/MM/YYYY') + ' at ' + appointment.start.format('HH:mm')
             + ' Thank you.'
         };
     transporter.sendMail(email,function(err){if(err) console.log(err)});

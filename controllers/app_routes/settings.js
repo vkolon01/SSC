@@ -2,6 +2,8 @@ var express = require('express'),
     accessHandler = require('./handlers/roles'),
     dataController = require('../../models/dataController'),
     moment = require('moment'),
+    async = require('async'),
+    Promise = require('promise'),
     router = express.Router();
 
 var userRole;
@@ -22,13 +24,17 @@ router.use(function(req,res,next){
 router.get('/',function(req,res){
     var permission = accessHandler.ac.can(userRole).readAny('settings');
     if (permission.granted) {
+        var data = load_settings();
+        load_settings().then(function(data){
             res.render('settings', {
                 pageTitle: "Settings",
                 siteName: res.locals.siteTitle,
                 errors: req.session.errors,
                 user: req.session.user,
-                role: req.session.role
+                role: req.session.role,
+                data: data
             });
+        })
     }else{
         res.status(403).end();
     }
@@ -43,15 +49,44 @@ router.post('/change_working_hours',function(req,res){
         })
     }
 });
+router.post('/change_mail_delivery_time',function(req,res){
+    var permission = accessHandler.ac.can(userRole).readAny('settings');
+    if(permission.granted){
+        dataController.update_mail_delivery_time(req.body.time).then(function(settings){
+            res.status(200);
+            res.render('./content/settings/mail_delivery_time',{
+                data: settings
+            });
+        });
+    }
+});
 
 router.post('/',function(req,res){
     get_business_working_hours(req,res);
 });
 
+var load_settings = function(){
+    return new Promise(function(fulfill,reject){
+        dataController.create_settings_file();
+        var delivery_time = dataController.get_mail_delivery_time();
+        var business_working_hours = dataController.get_business_working_hours();
+
+        Promise.all([
+            business_working_hours,
+            delivery_time
+
+        ]).then(function(data){
+            fulfill ({
+                working_days:data[0],
+                mail_delivery_time: data[1]
+            });
+        })
+    });
+};
 var get_business_working_hours = function(req,res){
     dataController.get_business_working_hours().then(function(working_days){
         res.status(200);
-        res.render('./content/settings_table',{
+        res.render('./content/settings/working_hours',{
             working_days:working_days,
             weekdays: moment.weekdays()
         });

@@ -4,7 +4,8 @@ var express = require('express'),
     async = require('async'),
     dataController = require('../../models/dataController'),
     Promise = require('promise'),
-    schedule = require('./handlers/scheduler');
+    schedule = require('./handlers/scheduler'),
+    email_handler = require('./handlers/email_handler'),
     moment  = require('moment');
 
 
@@ -13,16 +14,16 @@ router.post('/create_appointment',function(req,res){
         end_time = moment(start_time).add(req.body.time_slot,'minutes');
    var appointment = {
        dentist_id: req.body.dentist_id,
-       customer_id: req.body.customer_id,
+       client_id: req.body.client_id,
        start: start_time,
        end: end_time
     };
 
     dataController.check_availability(appointment.dentist_id,{start:start_time,end:end_time}).then(function(available){
         if(available){
-            dataController.find_customer(req.body.customer_id).then(function(customer){
+            dataController.find_client(req.body.client_id).then(function(client){
                 dataController.find_dentist(req.body.dentist_id).then(function(dentist){
-                    dataController.create_appointment({appointment:appointment,customer:customer,dentist:dentist}).then(function(result){
+                    dataController.create_appointment({appointment:appointment,client:client,dentist:dentist}).then(function(result){
                         res.send({message:"The appointment is booked"});
                     },function(err){
                         console.log(err);
@@ -40,6 +41,15 @@ router.post('/create_appointment',function(req,res){
 
 router.post('/delete_appointment',function(req,res){
     dataController.delete_appointment(req.body.id).then(function(appointment) {
+
+        //send an cancellation email
+        dataController.find_client(appointment.client_id).then(function(client){
+            dataController.find_dentist(appointment.dentist_id).then(function(dentist){
+                email_handler.sendCanceledAppointmentNotification({client: client,dentist:dentist});
+            });
+        });
+
+        //refresh the appointment table
         get_appointments(appointment.dentist_id).then(function(organised_list){
            res.status(200);
            res.render('./content/appointment_table',{
@@ -81,25 +91,27 @@ router.post('/get_times',function(req,res){
     dataController.get_business_working_hours().then(function(working_days){
         var time_slot = req.body.time_slot,
             dentist_id = req.body.dentist_id,
-            date = moment(req.body.date,"DD/MM/YY");
-        var search_from = moment(date),
-            search_to = date.add(1,'d'),
-            list = [];
+            date = moment(req.body.date,"DD/MM/YY"),
+            search_from = moment(date).utc().add(1,'h'),
+            search_to = date.add(1,'d').utc(),
+            list = [],
+            opening = moment(date).hour(working_days[date.weekday()].opening),
+            closing = moment(date).hour(working_days[date.weekday()].closing);
+
         (function collect(){
+
+            var start = moment(search_from).utc(),
+                end = moment(start).add(time_slot,'minutes').utc();
+
             if (search_from >= search_to) {
                 res.status(200);
                 res.render('./content/get_hours',{list: list});
                 res.end();
             }else{
-                var start = moment(search_from).utc(),
-                    end = moment(start).add(time_slot,'minutes').utc();
-                if(start.hours() >=  working_days[start.weekday()].opening && end.hours() <=  working_days[start.weekday()].closing -1 ){
-                    console.log(start.weekday());
-                    console.log(start.hours() + ' >= ' +  working_days[start.weekday()].opening + ' && ' + end.hours() + ' <= ' + (working_days[start.weekday()].closing -1) );
-                    dataController.check_availability(dentist_id,{start:start, end:end}).then(function(available){
+                if(start >=  opening && end <= closing ){ //Checking if the date is within business working hours.
+                    dataController.check_availability(dentist_id,{start:start, end:end}).then(function(available){  // checking if the date overlaps with another appointment on the current dentist
                         if(available){
-                            list.push(start.utc().format("hh:mm"));
-                            console.log(start.utc().format("hh:mm"));
+                            list.push(start.utc().format("HH:mm"));
                         }
                         search_from.add(15,'minutes'); //adjusts the time selection window.
                         collect();
@@ -120,21 +132,21 @@ function get_appointments(id){
                 var organised_list = [];
                 list.forEach(function(appointment) {
                     dataController.find_dentist(appointment.dentist_id).then(function(dentist) {
-                        dataController.find_customer(appointment.customer_id).then(function(customer){
+                        dataController.find_client(appointment.client_id).then(function(client){
                             organised_list.push({
                                 id: appointment._id,
                                 date: moment(appointment.start).utc().format('DD/MM/YY'),
                                 time: moment(appointment.start).utc().format('HH:mm'),
                                 dentist: dentist,
-                                customer: customer,
+                                client: client,
                                 time_slot: moment(appointment.end - appointment.start).format('mm')
                             });
                             setTimeout(function(){
-                                if(organised_list.length == list.length){fulfill(organised_list)}
+                                if(organised_list.length == list.length){fulfill(sort(organised_list))}
                             },100)
                         });
                         setTimeout(function(){ //forces the return of the list after one second
-                            fulfill(organised_list)
+                            fulfill(sort(organised_list));
                         },1000);
                     });
 
@@ -145,5 +157,24 @@ function get_appointments(id){
         });
     });
 }
+
+function sort(list){
+    var temp;
+    for(var i = 0; i < list.length; i++){
+        for(var y = 1; y < list.length; y++){
+            var curDate1 = moment(list[y].date + ' ' + list[y].time,'DD/MM/YY HH:mm').format();
+            var curDate2 = moment(list[y-1].date + ' ' + list[y-1].time,'DD/MM/YY HH:mm').format();
+            if(curDate1 < curDate2){
+                temp = list[y];
+                list[y] = list[y-1];
+                list[y-1] = temp;
+            }
+        }
+        if(i == list.length -1){
+           return list;
+        }
+    }
+}
+
 exports.get_appointments = get_appointments;
 module.exports = router;

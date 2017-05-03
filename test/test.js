@@ -243,10 +243,7 @@ describe('data access testing',function(){
             });
         });
         after(function(done){
-            dataController.delete_by_username(user_accounts.general_test_account1.username);
-            dataController.delete_by_username(user_accounts.receptionist_test_account2.username);
-            dataController.delete_by_username(user_accounts.assistant_test_account2.username);
-            dataController.delete_by_username(user_accounts.general_test_account2.username);
+            delete_all_accounts({gm1:user_accounts.general_test_account1.username,am2:user_accounts.assistant_test_account2.username, gm2: user_accounts.general_test_account2.username, re2: user_accounts.receptionist_test_account2.username});
             request.agent(server).get('/home/logOut');
             server.close();
             done()
@@ -292,10 +289,13 @@ describe('data access testing',function(){
 describe('appointment testing',function(){
     var server;
     var agent;
+    var login_user;
+    var client_account;
     before(function(done){
         server = require('../server');
         agent = chai.request.agent(server);
-        test_registration.register(user_accounts.assistant_test_account1).then(function(response){
+        test_registration.register(user_accounts.assistant_test_account1).then(function(user){
+            login_user = user;
             agent
                 .post('/login')
                 .send({username: user_accounts.assistant_test_account1.username,password: user_accounts.assistant_test_account1.password})
@@ -305,18 +305,19 @@ describe('appointment testing',function(){
         });
     });
     after(function(done){
-        dataController.delete_by_username(user_accounts.assistant_test_account1.username);
         request.agent(server).get('/home/logout');
+        delete_all_accounts({login_user:login_user,client_account: client_account});
         done()
     });
 
-    it('should create customer',function(done){
+    it('should create client',function(done){
         agent
-            .post('/customers/registration/submit')
-            .send(user_accounts.customer_account1)
+            .post('/clients/registration/submit')
+            .send(user_accounts.client_account1)
             .end(function(err,res){
-                dataController.find_customer_by_email(user_accounts.customer_account1.email).then(function(customer){
-                    expect(customer.account_info.name).to.equal(user_accounts.customer_account1.name);
+                dataController.find_client_by_email(user_accounts.client_account1.email).then(function(client){
+                    expect(client.account_info.name).to.equal(user_accounts.client_account1.name);
+                    client_account = client;
                     done();
                 })
             })
@@ -324,4 +325,18 @@ describe('appointment testing',function(){
 });
 
 
-
+function delete_all_accounts(accounts){
+    accounts.forEach(function(account){
+        console.log(account);
+        var role = account.role;
+        if(role == 'Client'){
+            dataController.delete_client(account._id);
+        }
+        if(role == 'receptionist' || role == 'assistant_manager' || role == 'general_manager' || role == 'administrator'){
+            dataController.delete_by_username(account.username);
+        }
+        if(role == 'dentist'){
+            dataController.delete_dentist(account._id);
+        }
+    });
+};

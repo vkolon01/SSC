@@ -1,0 +1,7 @@
+<h2>----Notification settings----</h2>
+
+<select id="email_delivery" onchange="update_mail_delivery_time({time: this.value})">
+    <%for(var i = 0;i < 25; i++){%>
+    <option  <%if(data.mail_delivery_time == i){%>selected<%}%>   value=<%=i%>><%=i%>:00</option>
+    <%}%>
+</select>

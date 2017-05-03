@@ -4,11 +4,11 @@ var Account_Info = require('./account_info').account_data(),
     Promise = require('promise'),
     shortid = require('shortid');
 
-//mongoose schema for the customer.
-var Customer_Schema = new mongoose.Schema({
+//mongoose schema for the client.
+var Client_Schema = new mongoose.Schema({
         role: {
             type: String,
-            default: "Customer"
+            default: "Client"
         },
         _id:String,
         registration_date: Date,
@@ -16,19 +16,19 @@ var Customer_Schema = new mongoose.Schema({
         medicalHistory: [String]
     });
 
-//customer model connected to mongoose database.
-var Customer_Model = mongoose.model('customer_account',Customer_Schema);
+//client model connected to mongoose database.
+var Client_Model = mongoose.model('client_account',Client_Schema);
 
 //exported functions that are called by the accountController
 exports.create_account = function(form){
     console.log(shortid.generate());
     return new Promise(function(fulfill,reject){
 
-        Customer_Model.find({'account_info.email':form.email},function(err,result){
+        Client_Model.find({'account_info.email':form.email},function(err,result){
             if(result.length > 0){
                 reject('The email is already in use');
             } else{
-                var account = new Customer_Model({
+                var account = new Client_Model({
                     _id: shortid.generate(),
                     registration_date: new Date(),
                     account_info:{
@@ -49,9 +49,9 @@ exports.create_account = function(form){
     })
 };
 
-exports.edit_phone_number = function(phone_number, customer_id){
+exports.edit_phone_number = function(phone_number, client_id){
     return new Promise(function(fulfill,reject){
-        Customer_Model.findByIdAndUpdate(customer_id,
+        Client_Model.findByIdAndUpdate(client_id,
             {$set:{'account_info.phone_number':phone_number}}
         ,function(err, account){
             email_handler.sendChangePhoneNumberNotification(account,phone_number);
@@ -60,13 +60,13 @@ exports.edit_phone_number = function(phone_number, customer_id){
         })
     });
 };
-exports.edit_email = function(email, customer_id){
+exports.edit_email = function(email, client_id){
     return new Promise(function(fulfill,reject){
-        Customer_Model.find({'account_info.email':email},function(err,result){
+        Client_Model.find({'account_info.email':email},function(err,result){
            if(result.length > 0){
                reject('The email is already in use');
            } else{
-               Customer_Model.findByIdAndUpdate(customer_id,
+               Client_Model.findByIdAndUpdate(client_id,
                    {$set:{'account_info.email':email}}
                    ,function(err, account){
                        if(err) reject(err);
@@ -80,39 +80,30 @@ exports.edit_email = function(email, customer_id){
     });
 };
 
-exports.find_account = function(customer_id){
+exports.find_account = function(client_id){
     return new Promise(function(fulfill,reject){
-        Customer_Model.findById(customer_id,function(err,customer_data){
-            if(err) reject('Customer not found');
-            if(customer_data) {
-                fulfill(customer_data)
+        Client_Model.findById(client_id,function(err,client_data){
+            if(err) reject('Client not found');
+            if(client_data) {
+                fulfill(client_data)
             }else{
-                reject('Customer not found');
+                reject('Client not found');
             }
         })
     });
 };
 
-exports.find_customer_by_email = function(email){
+exports.find_client_by_email = function(email){
     return new Promise(function(fulfill,reject){
-        /*
-            Customer_Model.find(function(err,list){
-                if(err) reject('Error has occurred');
-                if(list) {
-                    list.find
-                }else{
-                    reject('No customer data is found')}
-            })
-            */
-        Customer_Model.findOne({
+        Client_Model.findOne({
             account_info:{email:email}
-        },function(err,customer_data){
-            if(err) reject('Customer not found');
-            console.log(customer_data);
-            if(customer_data) {
-                fulfill(customer_data)
+        },function(err,client_data){
+            if(err) reject('Client not found');
+            console.log(client_data);
+            if(client_data) {
+                fulfill(client_data)
             }else{
-                reject('Customer not found');
+                reject('Client not found');
             }
         })
     });
@@ -120,19 +111,20 @@ exports.find_customer_by_email = function(email){
 
 exports.get_all_accounts = function(){
     return new Promise(function(fulfill,reject){
-        Customer_Model.find(function(err,list){
+
+        Client_Model.find(function(err,list){
+            console.log(list);
             if(err) reject('Error has occurred');
             if(list) {
                 fulfill(list)
             }else{
-                reject('No customer data is found')}
+                reject('No client data is found')}
         })
     })
 };
-
-exports.delete_customer = function(customer_id){
+exports.delete_client = function(client_id){
     return new Promise(function(fulfill,reject){
-        Customer_Model.findOneAndRemove({'_id':customer_id},function(err,removed_account){
+        Client_Model.findOneAndRemove({'_id':client_id},function(err,removed_account){
             //Store deleted_account in a log file.
             email_handler.sendRemovedAccountNotification(removed_account);
             fulfill(removed_account);

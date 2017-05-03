@@ -14,17 +14,17 @@
     <br><br>
     <table id="browse_table">
         <tr class="header">
-            <th style="width:33%;"><input type="text" id="filter_id" onkeyup="filterID()" placeholder="Filter by ID.." title="Type customer ID"><br><br>ID</th>
-            <th style="width:33%;"><input type="text" id="filter_name" onkeyup="filterName()" placeholder="Filter by name.." title="Type customer name"> <br><br>Name</th>
-            <th style="width:33%"><input type="text" id="filter_dob" onkeyup="filterDateOfBirth()" placeholder="Filter by date of birth.." title="Type customer date of birth"> <br><br>Date of birth</th>
+            <th style="width:33%;"><input type="text" id="filter_id" onkeyup="filterID()" placeholder="Filter by ID.." title="Type client ID"><br><br>ID</th>
+            <th style="width:33%;"><input type="text" id="filter_name" onkeyup="filterName()" placeholder="Filter by name.." title="Type client name"> <br><br>Name</th>
+            <th style="width:33%"><input type="text" id="filter_dob" onkeyup="filterDateOfBirth()" placeholder="Filter by date of birth.." title="Type client date of birth"> <br><br>Date of birth</th>
         </tr>
-        <%if(typeof customer_list !== 'undefined'){
-        customer_list.forEach(function(customer){ %>
-        <%if(typeof customer.id !=='undefined'){%>
-                <tr class="account_url" data-href="<%='customers/'+customer.id%>">
-                    <td><%=customer.id%></td>
-                    <td><%=customer.name%></td>
-                    <td><%=customer.date_of_birth%></td>
+        <%if(typeof client_list !== 'undefined'){
+        client_list.forEach(function(client){ %>
+        <%if(typeof client.id !=='undefined'){%>
+                <tr class="account_url" data-href="<%='clients/'+client.id%>">
+                    <td><%=client.id%></td>
+                    <td><%=client.name%></td>
+                    <td><%=client.date_of_birth%></td>
                 </tr>
         <% }});
         }%>

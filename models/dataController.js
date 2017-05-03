@@ -3,19 +3,19 @@
  */
 
 var staff_data = require('./staff_data'),
-    customer_data = require('./customer_data'),
+    client_data = require('./client_data'),
     dentist_data = require('./dentist_data'),
     settings_data = require('./settings_data'),
     appointment_data = require('./appointment_data');
 
-//customer_data
-exports.edit_customer_phone_number = function(phone_number,customer_id){return customer_data.edit_phone_number(phone_number,customer_id)};
-exports.create_customer_account = function(form){return customer_data.create_account(form)};
-exports.find_customer = function(id){return customer_data.find_account(id)};
-exports.find_customer_by_email = function(customer_email){return customer_data.find_customer_by_email(customer_email)};
-exports.get_all_customers = function(){return customer_data.get_all_accounts()};
-exports.edit_customer_email = function(email,customer_id){return customer_data.edit_email(email,customer_id)};
-exports.delete_customer = function(customer_id){return customer_data.delete_customer(customer_id)};
+//client_data
+exports.edit_client_phone_number = function(phone_number,client_id){return client_data.edit_phone_number(phone_number,client_id)};
+exports.create_client_account = function(form){return client_data.create_account(form)};
+exports.find_client = function(id){return client_data.find_account(id)};
+exports.find_client_by_email = function(client_email){return client_data.find_client_by_email(client_email)};
+exports.get_all_clients = function(){return client_data.get_all_accounts()};
+exports.edit_client_email = function(email,client_id){return client_data.edit_email(email,client_id)};
+exports.delete_client = function(client_id){return client_data.delete_client(client_id)};
 
 //staff_data
 exports.delete_by_username = function(username){return staff_data.delete_by_username(username)};
@@ -41,5 +41,7 @@ exports.delete_appointment = function(data){return appointment_data.delete_appoi
 
 //settings
 exports.create_settings_file = function(){return settings_data.create_settings_file()};
-exports.update_business_working_hours = function(data){return settings_data.update_working_hours(data)};
-exports.get_business_working_hours =function(){return settings_data.get_working_hours()};
+exports.update_business_working_hours = function(data){return settings_data.update_business_working_hours(data)};
+exports.update_mail_delivery_time = function(time){return settings_data.update_mail_delivery_time(time)};
+exports.get_business_working_hours = function(){return settings_data.get_working_hours()};
+exports.get_mail_delivery_time = function(){return settings_data.get_mail_delivery_time()};

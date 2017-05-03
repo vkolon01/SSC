@@ -8,9 +8,11 @@
     <h1><%= pageTitle %></h1>
     <% include template/errors.ejs %>
     <% include template/sidebar.ejs %>
-    <div id="working_hours_settings">
 
-    </div>
+    <h1>Settings</h1>
+
+    <div id="working_hours_settings"></div>
+    <div id="email_delivery_time_settings"><% include content/settings/mail_delivery_time.ejs %></div>
 </div>
 
 <script>

@@ -3,16 +3,16 @@
     <tr class="header">
         <th style="width:25%;">Date</th>
         <th style="width:25%;">Time</th>
-        <th style="width:25%">Customer Name</th>
+        <th style="width:25%">Client Name</th>
         <th style="width:25%">Dentist Name</th>
         <th style="width:5%">Session time</th>
         <th style="width:5%">Delete</th>
     </tr>
     <%appointment_list.forEach(function(appointment){ %>
-    <tr class="account_url" data-href="<%='customers/'+appointment.customer._id%>">
+    <tr class="account_url" data-href="<%='clients/'+appointment.client._id%>">
         <td><%=appointment.date%></td>
         <td><%=appointment.time%></td>
-        <td><%=appointment.customer.account_info.name%></td>
+        <td><%=appointment.client.account_info.name%></td>
         <td><%=appointment.dentist.account_info.name%></td>
         <td><%=appointment.time_slot%></td>
         <td><button onclick="delete_appointment(this.value)" value="<%=appointment.id%>">&times;</button></td>

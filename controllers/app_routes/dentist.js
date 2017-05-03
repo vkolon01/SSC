@@ -149,7 +149,6 @@ router.post('/edit/phone_number',function(req,res){
             phone_number = req.body.phone_number;
         if(phone_number){
             form_validation.validate_phone_number(phone_number).then(function(data){dataController.edit_dentist_phone_number(data,id).then(function(data){
-                    console.log(data);
                     res.redirect('/dentist/'+id);
                 },function(err){
                     console.log(err);

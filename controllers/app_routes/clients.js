@@ -13,10 +13,10 @@ router.use(function(req,res,next){
 });
 
 router.get('/registration',function(req,res){
-    var permission = accessHandler.ac.can(userRole).createAny('customer');
+    var permission = accessHandler.ac.can(userRole).createAny('client');
     if (permission.granted) {
-        res.render('customer_registration', {
-            pageTitle: "Customer registration",
+        res.render('client_registration', {
+            pageTitle: "Client registration",
             siteName: res.locals.siteTitle,
             errors: req.session.errors,
             user: req.session.user,
@@ -27,12 +27,12 @@ router.get('/registration',function(req,res){
     }
 });
 
-router.get('/:customer_id',function(req,res){
-    var permission = accessHandler.ac.can(userRole).readAny('customer');
+router.get('/:client_id',function(req,res){
+    var permission = accessHandler.ac.can(userRole).readAny('client');
     if (permission.granted){
-        dataController.find_customer(req.params.customer_id).then(function(data){
-            //Customer data
-            var customer_data = {
+        dataController.find_client(req.params.client_id).then(function(data){
+            //Client data
+            var client_data = {
                 name : data.account_info.name,
                 id: data._id,
                 gender: data.account_info.gender.charAt(0).toUpperCase() + data.account_info.gender.slice(1),
@@ -46,13 +46,13 @@ router.get('/:customer_id',function(req,res){
             //Dentist list collection
             var list = [];
             dataController.get_all_dentists().then(function(dentist_list){
-                res.render('customer_page',{
-                    pageTitle: "Customer page",
+                res.render('client_page',{
+                    pageTitle: "Client page",
                     siteName: res.locals.siteTitle,
                     errors: req.session.errors,
                     user: req.session.user,
                     role: req.session.role,
-                    customer_data: customer_data,
+                    client_data: client_data,
                     dentist_list: dentist_list
                 });
             },function(err){
@@ -69,28 +69,29 @@ router.get('/:customer_id',function(req,res){
 });
 
 router.get('/',function(req,res){
-    var permission = accessHandler.ac.can(userRole).readAny('customer');
+    var permission = accessHandler.ac.can(userRole).readAny('client');
     if(permission.granted){
-        dataController.get_all_customers().then(function(data) {
-            var customer_list = [{}];
-            data.forEach(function (customer) {
-                customer_list.push({
-                    name: customer.account_info.name,
-                    id: customer._id,
-                    registration_date: moment(customer.registration_date).format('DD-MM-YYYY'),
-                    date_of_birth: moment(customer.account_info.date_of_birth).format('DD-MM-YYYY'),
-                    age: moment(moment(customer.account_info.date_of_birth).format("YYYY"), "YYYY").fromNow().replace('ago', 'old'),
-                    phone_number: customer.account_info.phone_number,
-                    email: customer.account_info.email
-                })
+        dataController.get_all_clients().then(function(data) {
+            var client_list = [{}];
+            data.forEach(function (client) {
+                client_list.push({
+                    name: client.account_info.name,
+                    id: client._id,
+                    registration_date: moment(client.registration_date).format('DD-MM-YYYY'),
+                    date_of_birth: moment(client.account_info.date_of_birth).format('DD-MM-YYYY'),
+                    age: moment(moment(client.account_info.date_of_birth).format("YYYY"), "YYYY").fromNow().replace('ago', 'old'),
+                    phone_number: client.account_info.phone_number,
+                    email: client.account_info.email
+                });
+                console.log(client)
             });
-            res.render('customer_browse', {
-                pageTitle: "Customer page",
+            res.render('client_browse', {
+                pageTitle: "Client page",
                 siteName: res.locals.siteTitle,
                 errors: req.session.errors,
                 user: req.session.user,
                 role: req.session.role,
-                customer_list: customer_list
+                client_list: client_list
             })
         },function(err){
             req.session.errors.push(err);
@@ -102,10 +103,10 @@ router.get('/',function(req,res){
 });
 /*POST requests*/
 
-//Submission of new customer form. The form is validated, verified and used to create a new customer.
+//Submission of new client form. The form is validated, verified and used to create a new client.
 router.post('/registration/submit',function(req,res){
     console.log(req.body);
-    var permission = accessHandler.ac.can(userRole).createAny('customer');
+    var permission = accessHandler.ac.can(userRole).createAny('client');
     if(permission.granted){
         var form = {
             name : req.body.name,
@@ -115,15 +116,15 @@ router.post('/registration/submit',function(req,res){
             gender : req.body.gender
         };
 
-        form_validation.validate_customer_form(form).then(function(data){dataController.create_customer_account(data).then(function(data){
-            res.redirect('/customers/'+data._id);
+        form_validation.validate_client_form(form).then(function(data){dataController.create_client_account(data).then(function(data){
+            res.redirect('/clients/'+data._id);
         },function(err){// Account creation error handling
-            res.redirect('/customers/registration');
+            res.redirect('/clients/registration');
             console.error(err);
         });
         },function(err){ // Form handlers error handling
             req.session.errors = err;
-            res.redirect('/customers/registration');
+            res.redirect('/clients/registration');
             done(console.error(err));
         });
     }else{
@@ -132,25 +133,25 @@ router.post('/registration/submit',function(req,res){
 
 });
 
-//Modification of customer stored phone data.
+//Modification of client stored phone data.
 router.post('/edit/phone_number',function(req,res){
-    var permission = accessHandler.ac.can(userRole).updateAny('customer');
+    var permission = accessHandler.ac.can(userRole).updateAny('client');
     if(permission.granted){
-        var customer_id = req.body.customer_id,
+        var client_id = req.body.client_id,
             phone_number = req.body.phone_number;
         if(phone_number){
-            form_validation.validate_phone_number(phone_number).then(function(data){dataController.edit_customer_phone_number(data,customer_id).then(function(data){
+            form_validation.validate_phone_number(phone_number).then(function(data){dataController.edit_client_phone_number(data,client_id).then(function(data){
                     console.log(data);
-                    res.redirect('/customers/'+customer_id);
+                    res.redirect('/clients/'+client_id);
                 },function(err){
                     console.log(err);
                     //req.session.errors.push(err);
-                    res.redirect('/customers/'+customer_id);
+                    res.redirect('/clients/'+client_id);
                 })},
                 function(err){
                     console.log(err);
                     //req.session.push(err);
-                    res.redirect('/customers/'+customer_id);
+                    res.redirect('/clients/'+client_id);
                 })
         }
     }else{
@@ -158,25 +159,25 @@ router.post('/edit/phone_number',function(req,res){
     }
 });
 
-//Modification of customer stored email address data
+//Modification of client stored email address data
 router.post('/edit/email',function(req,res){
     var permission = accessHandler.ac.can(userRole).updateAny('dentist');
     if(permission.granted){
-        var customer_id = req.body.customer_id,
+        var client_id = req.body.client_id,
             email = req.body.email;
         if(email){
-            form_validation.validate_email(email).then(function(data){dataController.edit_customer_email(data,customer_id).then(function(data){
+            form_validation.validate_email(email).then(function(data){dataController.edit_client_email(data,client_id).then(function(data){
                     console.log(data);
-                    res.redirect('/customers/'+customer_id);
+                    res.redirect('/clients/'+client_id);
                 },function(err){
                     console.log(err);
                     //req.session.errors.push(err);
-                    res.redirect('/customers/'+customer_id);
+                    res.redirect('/clients/'+client_id);
                 })},
                 function(err){
                     console.log(err);
                     //req.session.push(err);
-                    res.redirect('/customers/'+customer_id);
+                    res.redirect('/clients/'+client_id);
                 })
         }
     }else{
@@ -185,24 +186,24 @@ router.post('/edit/email',function(req,res){
 });
 
 router.post('/delete',function(req,res){
-    var permission = accessHandler.ac.can(userRole).deleteAny('customer');
+    var permission = accessHandler.ac.can(userRole).deleteAny('client');
     if(permission.granted){
-        dataController.delete_customer(req.body.customer_id).then(function(customer){
-            dataController.get_appointments(customer._id).then(function(list){
+        dataController.delete_client(req.body.client_id).then(function(client){
+            dataController.get_appointments(client._id).then(function(list){
                 console.log(list);
                 if(list.length > 0){
                     list.forEach(function(appointment){
                         dataController.find_dentist(appointment.dentist_id).then(function(dentist){
-                            email_handler.sendDentistCanceledAppointmentNotification({customer:customer, dentist: dentist});
+                            email_handler.sendDentistCanceledAppointmentNotification({client:client, dentist: dentist});
                             dataController.delete_appointment(appointment._id)
                         });
                     });
                 }
             });
-            res.redirect('/customers');
+            res.redirect('/clients');
         },function(err){
             console.log(err);
-            res.redirect('/customers/'+customer_id);
+            res.redirect('/clients/'+client_id);
         })
     }else{
         res.status(403).send(accessHandler.errors.delete_account).end();

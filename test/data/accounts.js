@@ -65,7 +65,7 @@ module.exports = {
         email: 'generaltest2@hotmail.com',
         gender: 'male'
     },
-    customer_account1:{
+    client_account1:{
             name: 'Viktor Salabin',
             phone_number: '12345',
             date_of_birth: new Date(),

@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
 
 var Appointment_Schema = new mongoose.Schema({
     dentist_id:String,
-    customer_id:String,
+    client_id:String,
     start:Date,
     end:Date
 });
@@ -16,7 +16,7 @@ exports.create_appointment = function(data){
     return new Promise(function(reject,fulfill){
         var new_appointment = new Appointment_Model({
             dentist_id: data.appointment.dentist_id,
-            customer_id: data.appointment.customer_id,
+            client_id: data.appointment.client_id,
             start: data.appointment.start,
             end: data.appointment.end
         });
@@ -41,7 +41,7 @@ exports.delete_appointment = function(id){
 
 exports.get_appointments = function(id){
   return new Promise(function(fulfill,reject){
-      Appointment_Model.find({$or:[{dentist_id:id},{customer_id:id}]},function(err,list){
+      Appointment_Model.find({$or:[{dentist_id:id},{client_id:id}]},function(err,list){
           if(err)reject (err);
               fulfill(list)
       })

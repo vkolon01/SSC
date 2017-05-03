@@ -32,9 +32,9 @@ exports.validate_dentist_form = function(form){
     });
 };
 
-exports.validate_customer_form = function(form) {
+exports.validate_client_form = function(form) {
     return new Promise(function (fulfill, reject) {
-        const MIN_CUSTOMER_AGE = 5,
+        const MIN_CLIENT_AGE = 5,
             MIN_NAME_LENGTH = 3,
             MAX_NAME_LENGTH = 50;
 
@@ -49,8 +49,8 @@ exports.validate_customer_form = function(form) {
         if (validator.isEmpty(form.email) || !validator.isEmail(form.email)) {
             errors.push('Enter a valid email address.');
         }
-        if(moment(moment(form.date_of_birth).format("YYYY"),"YYYY").fromNow() < MIN_CUSTOMER_AGE){
-            errors.push('The customer is too young');
+        if(moment(moment(form.date_of_birth).format("YYYY"),"YYYY").fromNow() < MIN_CLIENT_AGE){
+            errors.push('The client is too young');
         }
         if (errors.length > 0)return reject(errors);
         fulfill(form);

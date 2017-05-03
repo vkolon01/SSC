@@ -4,9 +4,7 @@
     <% include template/head.ejs %>
 </head>
 <body>
-
 <div class="container">
-
     <% include template/errors.ejs %>
     <% include template/sidebar.ejs %>
     <h1><%= pageTitle %></h1>
@@ -25,13 +23,13 @@
                 <th style="width:50%;">F</th>
                 <th style="width:50%;">Name</th>
             </tr>
-            <%if(typeof customer_list !== 'undefined'){
-            customer_list.forEach(function(customer){ %>
-            <%if(typeof customer.id !=='undefined'){%>
-            <tr class="customer_url" data-href="<%='customers/'+customer.id%>">
-                <td><%=customer.id%></td>
-                <td><%=customer.name%></td>
-                <td><%=customer.date_of_birth%></td>
+            <%if(typeof client_list !== 'undefined'){
+            client_list.forEach(function(client){ %>
+            <%if(typeof client.id !=='undefined'){%>
+            <tr class="client_url" data-href="<%='clients/'+client.id%>">
+                <td><%=client.id%></td>
+                <td><%=client.name%></td>
+                <td><%=client.date_of_birth%></td>
             </tr>
             <% }});
             }%>

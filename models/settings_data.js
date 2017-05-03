@@ -1,5 +1,7 @@
 var mongoose = require('mongoose'),
     Promise = require('promise'),
+    moment = require('moment'),
+    //scheduler = require('../controllers/app_routes/handlers/scheduler'),
     email_handler = require('../controllers/app_routes/handlers/email_handler');
 
 var working_days = [];
@@ -12,6 +14,10 @@ var Settings_Schema = new mongoose.Schema({
     working_days:{
         type:[],
         default: working_days
+    },
+    mail_delivery_time:{
+        type: Number,
+        default: 0
     }
 });
 
@@ -35,6 +41,19 @@ exports.create_settings_file = function(){
         })
     });
 };
+
+exports.get_mail_delivery_time = function(){
+   return new Promise(function(fulfill,reject){
+       Settings_Model.findOne({},function(err,list){
+           if(list){
+               fulfill(list.mail_delivery_time);
+           }else{
+               reject(err);
+           }
+       })
+   });
+};
+
 exports.get_working_hours = function(){
     return new Promise(function(fulfill,reject){
         Settings_Model.findOne({},function(err,list){
@@ -47,7 +66,7 @@ exports.get_working_hours = function(){
     })
 };
 
-exports.update_working_hours = function(data){
+exports.update_business_working_hours = function(data){
    return new Promise(function(fulfill,reject){
        var opening = parseInt(data.hours.opening),
            closing = parseInt(data.hours.closing),
@@ -60,6 +79,15 @@ exports.update_working_hours = function(data){
        }else{
            reject(false)
        }
+   })
+};
+
+exports.update_mail_delivery_time = function(time){
+   return new Promise(function(fulfill,reject){
+       Settings_Model.findOneAndUpdate({},{mail_delivery_time:time},function(err,settings){
+           //scheduler.change_notification_time(time);
+           fulfill(settings);
+       })
    })
 };
 
