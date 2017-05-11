@@ -8,7 +8,7 @@ var Account_Info = require('./account_info').account_data(),
 var Client_Schema = new mongoose.Schema({
         role: {
             type: String,
-            default: "Client"
+            default: "client"
         },
         _id:String,
         registration_date: Date,
@@ -96,10 +96,9 @@ exports.find_account = function(client_id){
 exports.find_client_by_email = function(email){
     return new Promise(function(fulfill,reject){
         Client_Model.findOne({
-            account_info:{email:email}
+            'account_info.email':email
         },function(err,client_data){
-            if(err) reject('Client not found');
-            console.log(client_data);
+            if(err) reject(err);
             if(client_data) {
                 fulfill(client_data)
             }else{
@@ -111,9 +110,7 @@ exports.find_client_by_email = function(email){
 
 exports.get_all_accounts = function(){
     return new Promise(function(fulfill,reject){
-
         Client_Model.find(function(err,list){
-            console.log(list);
             if(err) reject('Error has occurred');
             if(list) {
                 fulfill(list)
@@ -126,7 +123,6 @@ exports.delete_client = function(client_id){
     return new Promise(function(fulfill,reject){
         Client_Model.findOneAndRemove({'_id':client_id},function(err,removed_account){
             //Store deleted_account in a log file.
-            email_handler.sendRemovedAccountNotification(removed_account);
             fulfill(removed_account);
         })
     })

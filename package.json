@@ -26,6 +26,7 @@
     "password-hash-and-salt": "^0.1.4",
     "permission": "^1.0.4",
     "promise": "^7.1.1",
+    "rewire": "^2.5.2",
     "serve-favicon": "^2.3.2",
     "shortid": "^2.2.8",
     "timespan": "^2.3.0",

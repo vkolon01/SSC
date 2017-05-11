@@ -5,6 +5,7 @@ var express = require('express'),
     email_handler = require('./handlers/email_handler'),
     moment = require('moment'),
     accessHandler = require('./handlers/roles'),
+    Promise = require('promise'),
     userRole;
 
 router.use(function(req,res,next){
@@ -83,7 +84,6 @@ router.get('/',function(req,res){
                     phone_number: client.account_info.phone_number,
                     email: client.account_info.email
                 });
-                console.log(client)
             });
             res.render('client_browse', {
                 pageTitle: "Client page",
@@ -105,7 +105,6 @@ router.get('/',function(req,res){
 
 //Submission of new client form. The form is validated, verified and used to create a new client.
 router.post('/registration/submit',function(req,res){
-    console.log(req.body);
     var permission = accessHandler.ac.can(userRole).createAny('client');
     if(permission.granted){
         var form = {
@@ -141,7 +140,6 @@ router.post('/edit/phone_number',function(req,res){
             phone_number = req.body.phone_number;
         if(phone_number){
             form_validation.validate_phone_number(phone_number).then(function(data){dataController.edit_client_phone_number(data,client_id).then(function(data){
-                    console.log(data);
                     res.redirect('/clients/'+client_id);
                 },function(err){
                     console.log(err);
@@ -167,7 +165,6 @@ router.post('/edit/email',function(req,res){
             email = req.body.email;
         if(email){
             form_validation.validate_email(email).then(function(data){dataController.edit_client_email(data,client_id).then(function(data){
-                    console.log(data);
                     res.redirect('/clients/'+client_id);
                 },function(err){
                     console.log(err);
@@ -188,14 +185,16 @@ router.post('/edit/email',function(req,res){
 router.post('/delete',function(req,res){
     var permission = accessHandler.ac.can(userRole).deleteAny('client');
     if(permission.granted){
-        dataController.delete_client(req.body.client_id).then(function(client){
-            dataController.get_appointments(client._id).then(function(list){
-                console.log(list);
+        dataController.delete_client(req.body.client_id).then(function(removed_account){
+            email_handler.sendRemovedAccountNotification(removed_account); //sends notification to the client
+            dataController.get_appointments(removed_account._id).then(function(list){
                 if(list.length > 0){
                     list.forEach(function(appointment){
+                        dataController.delete_appointment(appointment._id);
                         dataController.find_dentist(appointment.dentist_id).then(function(dentist){
-                            email_handler.sendDentistCanceledAppointmentNotification({client:client, dentist: dentist});
-                            dataController.delete_appointment(appointment._id)
+                            email_handler.sendDentistCanceledAppointmentNotification({client:removed_account, dentist: dentist}); //notifies the dentist about the canceled appointment
+                        },function(err){
+                            console.log(err);
                         });
                     });
                 }

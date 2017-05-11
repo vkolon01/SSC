@@ -21,24 +21,39 @@ router.post('/create_appointment',function(req,res){
 
     dataController.check_availability(appointment.dentist_id,{start:start_time,end:end_time}).then(function(available){
         if(available){
-            dataController.find_client(req.body.client_id).then(function(client){
-                dataController.find_dentist(req.body.dentist_id).then(function(dentist){
-                    dataController.create_appointment({appointment:appointment,client:client,dentist:dentist}).then(function(result){
-                        res.send({message:"The appointment is booked"});
+            dataController.find_client(appointment.client_id).then(function(client){
+                dataController.find_dentist(appointment.dentist_id).then(function(dentist){
+                    dataController.create_appointment(appointment).then(function(success){
+                        if(success){
+                            email_handler.sendBookedAppointmentNotification({appointment:appointment,client:client,dentist:dentist});
+                            res.send({
+                                message:"The appointment is now booked",
+                                booked:true
+                            });
+                        }
                     },function(err){
-                        console.log(err);
+                        res.send({
+                            error:err,
+                            booked:false
+                        })
                     })
                 });
             });
         }else{
-            res.send({message:"Please choose a different time"})
+            res.send({
+                message:"Please choose a different time",
+                booked:false
+            })
         }
     },function(err){
-
+        console.log(err);
     });
 
 });
 
+/*
+Deletes the appointment by using the given id.
+ */
 router.post('/delete_appointment',function(req,res){
     dataController.delete_appointment(req.body.id).then(function(appointment) {
 
@@ -68,6 +83,9 @@ router.post('/browse_appointments',function(req,res){
     });
 });
 
+/*
+Returns all the days for the next month.
+ */
 router.post('/get_days',function(req,res){
     var dentist_id = req.body.dentist_id;
             var search_from = moment(),
@@ -87,8 +105,12 @@ router.post('/get_days',function(req,res){
             }
 });
 
+/*
+The route determines and returns time_slots of the day are available.
+ */
 router.post('/get_times',function(req,res){
     dataController.get_business_working_hours().then(function(working_days){
+        const TIME_SLOT = 15; //minutes
         var time_slot = req.body.time_slot,
             dentist_id = req.body.dentist_id,
             date = moment(req.body.date,"DD/MM/YY"),
@@ -113,11 +135,11 @@ router.post('/get_times',function(req,res){
                         if(available){
                             list.push(start.utc().format("HH:mm"));
                         }
-                        search_from.add(15,'minutes'); //adjusts the time selection window.
+                        search_from.add(TIME_SLOT,'minutes'); //adjusts the time selection window.
                         collect();
                     });
                 }else{
-                    search_from.add(15,'minutes'); //adjusts the time selection window.
+                    search_from.add(TIME_SLOT,'minutes'); //adjusts the time selection window.
                     collect();
                 }
             }
@@ -125,6 +147,11 @@ router.post('/get_times',function(req,res){
     });
 });
 
+/*
+Accepts id of either customer or dentist.
+Returns an array list of all the appointments that involves the account with that id.
+The list is sorted with the help of the sort function.
+ */
 function get_appointments(id){
     return new Promise(function(fulfill,reject){
         dataController.get_appointments(id).then(function(list){
@@ -139,7 +166,7 @@ function get_appointments(id){
                                 time: moment(appointment.start).utc().format('HH:mm'),
                                 dentist: dentist,
                                 client: client,
-                                time_slot: moment(appointment.end - appointment.start).format('mm')
+                                time_slot: moment(appointment.end - appointment.start).format('H:mm')
                             });
                             setTimeout(function(){
                                 if(organised_list.length == list.length){fulfill(sort(organised_list))}
@@ -158,6 +185,9 @@ function get_appointments(id){
     });
 }
 
+/*
+Sorts the given array list.
+ */
 function sort(list){
     var temp;
     for(var i = 0; i < list.length; i++){

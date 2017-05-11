@@ -3,20 +3,39 @@ var schedule = require('node-schedule'),
     moment = require('moment'),
     appointment_handler = require('../appointment'),
     email_handler = require('./email_handler');
+const TIME_SLOT = [0,15,30,45]; //minutes
 
+var notifier = new schedule.RecurrenceRule(),
+    eliminator = new schedule.RecurrenceRule();
 
-var rule = new schedule.RecurrenceRule();
+eliminator.second = TIME_SLOT;
+
+/*
+Sends notifications at the set delivery time.
+ */
 dataController.get_mail_delivery_time().then(function(time){
-    set_notification_time(time);
-    var j = schedule.scheduleJob(rule,function(){
+    set_notifier_time(time);
+    var j = schedule.scheduleJob(notifier,function(){
         send_reminder(new moment());
         send_schedule(new moment());
         dataController.create_settings_file();
     });
 });
-var set_notification_time = function(time){
-    rule.hour = time;
-    console.log(time)
+
+/*
+deletes all the expired appointments.
+ */
+schedule.scheduleJob(eliminator,function(){
+    dataController.delete_expired_appointment(new moment()).then(function(list){
+        //The list contains deleted appointments. Can be used for logging.
+        //console.log(list);
+    },function(err){
+        console.log(err);
+    })
+});
+
+var set_notifier_time = function(time){
+    notifier.hour = time;
 };
 
 var send_schedule = function(today){
@@ -63,4 +82,4 @@ var send_reminder = function(today){
 };
 
 //To be used as a gateway for changing the notification schedule
-exports.change_notification_time = function(time){set_notification_time(time)};
+exports.change_notification_time = function(time){set_notifier_time(time)};

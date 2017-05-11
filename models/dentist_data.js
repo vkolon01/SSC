@@ -65,6 +65,21 @@ exports.find_account = function(id){
     });
 };
 
+exports.find_dentist_by_email = function(email){
+    return new Promise(function(fulfill,reject){
+        Dentist_Model.findOne({
+            'account_info.email':email
+        },function(err,dentist_data){
+            if(err) reject(err);
+            if(dentist_data) {
+                fulfill(dentist_data)
+            }else{
+                reject('Dentist not found');
+            }
+        })
+    });
+};
+
 exports.create_account = function(form){
     return new Promise(function(fulfill,reject){
         Dentist_Model.find({'account_info.email':form.email},function(err,result){
@@ -84,7 +99,6 @@ exports.create_account = function(form){
                 });
                 account.save(function(err,account){
                     if(err)return reject(err);
-                    email_handler.sendGreetingEmail(account);
                     fulfill(account);
                 });
             }
@@ -96,7 +110,6 @@ exports.delete = function(id){
     return new Promise(function(fulfill,reject){
         Dentist_Model.findOneAndRemove({'_id':id},function(err,removed_account){
             //Store deleted_account in a log file.
-            email_handler.sendRemovedAccountNotification(removed_account);
             fulfill(removed_account);
         })
     })

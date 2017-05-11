@@ -78,12 +78,13 @@ exports.login = function(form){
         })
     });
 };
+
 exports.delete_by_username = function(username){
     return new Promise(function(fulfill,reject){
-        Account_Model.findOneAndRemove({'username':username},function(err,user){
-            if(err) throw err;
+        Account_Model.remove({'username':username},function(err,user){
+            if(err) reject(err);
             if(user){
-                fulfill(user);
+                fulfill();
             }
         })
     })

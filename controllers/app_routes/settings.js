@@ -8,6 +8,9 @@ var express = require('express'),
 
 var userRole;
 
+/*
+Middleware that checks if the user is logged in or not.
+ */
 router.use(function(req,res,next){
     if(!req.session || typeof req.session.user === 'undefined'){
         res.redirect('/login');
@@ -16,6 +19,9 @@ router.use(function(req,res,next){
     }
 });
 
+/*
+Middleware that sets the role to default name if the user is not logged in
+ */
 router.use(function(req,res,next){
     userRole = res.locals.userRole;
     next();
@@ -49,6 +55,7 @@ router.post('/change_working_hours',function(req,res){
         })
     }
 });
+
 router.post('/change_mail_delivery_time',function(req,res){
     var permission = accessHandler.ac.can(userRole).readAny('settings');
     if(permission.granted){
@@ -65,6 +72,12 @@ router.post('/',function(req,res){
     get_business_working_hours(req,res);
 });
 
+/*
+All of the settings are loaded from here at the start of the server.
+In case the settings file is missing from the database, a new one is created with default values.
+
+New implemented settings should be added here.
+ */
 var load_settings = function(){
     return new Promise(function(fulfill,reject){
         dataController.create_settings_file();
@@ -83,6 +96,10 @@ var load_settings = function(){
         })
     });
 };
+
+/*
+Returns an array of objects for opening hours of each day of the week
+ */
 var get_business_working_hours = function(req,res){
     dataController.get_business_working_hours().then(function(working_days){
         res.status(200);

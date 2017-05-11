@@ -39,7 +39,8 @@ router.route('/registration')
             date_of_birth: req.body.date_of_birth,
             phone_number: req.body.phone_number
         };
-        form_validation.validate_dentist_form(form).then(function(data){dataController.create_dentist_account(data).then(function(data){
+        form_validation.validate_dentist_form(form).then(function(data){dataController.create_dentist_account(data).then(function(account){
+            email_handler.sendGreetingEmail(account);
             res.redirect('/');
         },function(err){//Account creation error
             res.redirect('/dentist/registration');
@@ -119,13 +120,16 @@ router.get('/',function(req,res){
 router.post('/delete',function(req,res){
     var permission = accessHandler.ac.can(userRole).deleteAny('dentist');
     if(permission.granted){
-        dataController.delete_dentist(req.body.dentist_id).then(function(dentist){
-            dataController.get_appointments(dentist._id).then(function(list){
+        dataController.delete_dentist(req.body.dentist_id).then(function(removed_account){
+            email_handler.sendRemovedAccountNotification(removed_account);
+            dataController.get_appointments(removed_account._id).then(function(list){
                if(list){
                    list.forEach(function(appointment){
-                       dataController.find_customer(appointment.customer_id).then(function(customer){
-                           email_handler.sendDentistCanceledAppointmentNotification({customer:customer, dentist: dentist});
-                           dataController.delete_appointment(appointment._id)
+                       dataController.delete_appointment(appointment._id);
+                       dataController.find_client(appointment.client_id).then(function(client){
+                           email_handler.sendDentistCanceledAppointmentNotification({client:client, dentist: removed_account});
+                       },function(err){
+                           console.log(err);
                        });
                    });
                }
@@ -133,7 +137,7 @@ router.post('/delete',function(req,res){
             res.redirect('/dentist');
         },function(err){
             console.log(err);
-            res.redirect('/dentist/'+dentist_id);
+            res.redirect('/dentist/'+req.body.dentist_id);
         })
     }else{
         res.status(403).send(accessHandler.errors.delete_account).end();
@@ -173,7 +177,6 @@ router.post('/edit/email',function(req,res){
             email = req.body.email;
         if(email){
             form_validation.validate_email(email).then(function(data){dataController.edit_dentist_email(data,id).then(function(data){
-                    console.log(data);
                     res.redirect('/dentist/'+id);
                 },function(err){
                     console.log(err);

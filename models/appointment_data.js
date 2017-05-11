@@ -12,22 +12,24 @@ var Appointment_Schema = new mongoose.Schema({
 //dentist model connected to mongoose database.
 var Appointment_Model = mongoose.model('Appointment',Appointment_Schema);
 
-exports.create_appointment = function(data){
-    return new Promise(function(reject,fulfill){
+exports.create_appointment = function(appointment){
+    return new Promise(function(fulfill,reject){
         var new_appointment = new Appointment_Model({
-            dentist_id: data.appointment.dentist_id,
-            client_id: data.appointment.client_id,
-            start: data.appointment.start,
-            end: data.appointment.end
+            dentist_id: appointment.dentist_id,
+            client_id: appointment.client_id,
+            start: appointment.start,
+            end: appointment.end
         });
         new_appointment.save(function(err,appointment){
             if(err)reject(err);
-            email_handler.sendBookedAppointmentNotification(data);
-            fulfill(appointment);
+            fulfill(true);
         });
     });
 };
 
+/*
+seeks and deletes appointments by the given id
+ */
 exports.delete_appointment = function(id){
     return new Promise(function(fulfill,reject){
         Appointment_Model.findOneAndRemove({_id:id},function(err,appointment){
@@ -37,7 +39,19 @@ exports.delete_appointment = function(id){
     });
 };
 
+//deletes all the appointments before the given time
+exports.delete_expired_appointment = function(time){
+    return new Promise(function(fulfill,reject){
+        Appointment_Model.find({"end":{$lte:time}},function(err,list){
+            if(err)reject(err);
+            fulfill(list);
+            list.forEach(function(appointment){
+                appointment.remove();
+            });
 
+        });
+    });
+};
 
 exports.get_appointments = function(id){
   return new Promise(function(fulfill,reject){

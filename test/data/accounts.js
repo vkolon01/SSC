@@ -1,6 +1,7 @@
-module.exports = {
+var test_account_names = ["receptionisttest1","receptionisttest2","assistanttest1","assistanttest2","generaltest1","generaltest2"];
+var user_test_accounts = {
     receptionist_test_account1: {
-        username: 'receptionisttest1',
+        username: test_account_names[0],
         password: '12345',
         password_confirm: '12345',
         role: 'receptionist',
@@ -11,7 +12,7 @@ module.exports = {
         gender: 'male'
     },
     receptionist_test_account2: {
-        username: 'receptionisttest2',
+        username: test_account_names[1],
         password: '12345',
         password_confirm: '12345',
         role: 'receptionist',
@@ -22,7 +23,7 @@ module.exports = {
         gender: 'male'
     },
     assistant_test_account1: {
-        username: 'assistanttest1',
+        username: test_account_names[2],
         password: '12345',
         password_confirm: '12345',
         role: 'assistant_manager',
@@ -33,7 +34,7 @@ module.exports = {
         gender: 'male'
     },
     assistant_test_account2: {
-        username: 'assistanttest2',
+        username: test_account_names[3],
         password: '12345',
         password_confirm: '12345',
         role: 'assistant_manager',
@@ -44,7 +45,7 @@ module.exports = {
         gender: 'male'
     },
     general_test_account1: {
-        username: 'generaltest1',
+        username: test_account_names[4],
         password: '12345',
         password_confirm: '12345',
         role: 'general_manager',
@@ -55,7 +56,7 @@ module.exports = {
         gender: 'male'
     },
     general_test_account2: {
-        username: 'generaltest2',
+        username: test_account_names[5],
         password: '12345',
         password_confirm: '12345',
         role: 'general_manager',
@@ -64,20 +65,28 @@ module.exports = {
         date_of_birth: new Date(),
         email: 'generaltest2@hotmail.com',
         gender: 'male'
-    },
+    }
+};
+var client_test_accounts = {
     client_account1:{
-            name: 'Viktor Salabin',
-            phone_number: '12345',
-            date_of_birth: new Date(),
-            email: 'customertest@hotmail.com',
-            gender: 'male'
-    },
-    dentist_account:{
+        name: 'Viktor Salabin',
+        phone_number: '12345',
+        date_of_birth: new Date(),
+        email: 'clienttest@hotmail.com',
+        gender: 'male'
+    }
+};
+var dentist_test_accounts = {
+    dentist_account1:{
         name: 'Salena Salabina',
         phone_number: '12345',
         date_of_birth: new Date(),
-        email: 'customertest@hotmail.com',
+        email: 'dentisttest@hotmail.com',
         gender: 'male'
     }
 };
 
+exports.dentist_test_accounts = dentist_test_accounts;
+exports.client_test_accounts = client_test_accounts;
+exports.user_test_accounts = user_test_accounts;
+exports.test_account_names = test_account_names;

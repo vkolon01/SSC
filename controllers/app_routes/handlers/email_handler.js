@@ -28,7 +28,7 @@ exports.sendDentistCanceledAppointmentNotification = function(data){
 exports.sendTomorrowAppointments = function(list,dentist){
     var table = [];
     list.forEach(function(appointment){
-        table.push('\n ' + appointment.time + ' | Appointment time: ' + appointment.time_slot + ' minutes. | Client name: ' + appointment.client.account_info.name );
+        table.push('\n ' + appointment.time + ' | Appointment time: ' + appointment.time_slot + ' | Client name: ' + appointment.client.account_info.name );
     });
     var email = {
         from:'GiveMeYourEmailPlease@gmail.com',
@@ -64,8 +64,9 @@ exports.sendCanceledAppointmentNotification = function(data){
 
 
 exports.sendGreetingEmail = function(account_data){
+    var email;
     if(account_data.role == 'client'){
-        var email = {
+        email = {
             from:'GiveMeYourEmailPlease@gmail.com',
             to: account_data.account_info.email,
             subject: 'Welcome to ' + COMPANY_NAME,
@@ -74,7 +75,7 @@ exports.sendGreetingEmail = function(account_data){
         };
     }
     if(account_data.role == 'dentist'){
-        var email = {
+        email = {
             from:'GiveMeYourEmailPlease@gmail.com',
             to: account_data.account_info.email,
             subject: 'Welcome to ' + COMPANY_NAME,
@@ -82,12 +83,13 @@ exports.sendGreetingEmail = function(account_data){
             'As an employee at ' + COMPANY_NAME + ' you will receive all your notifications, including incoming appointments, on this email address.'
         };
     }
-    transporter.sendMail(email,function(err){if(err) console.log(err)})
+    if(email)transporter.sendMail(email,function(err){if(err) console.log(err)})
 };
 
 exports.sendChangeEmailNotification = function(data,new_email){
+    var email;
     if(data.role == 'client'){
-        var email = {
+        email = {
             from:'GiveMeYourEmailPlease@gmail.com',
             to: new_email,
             subject: 'Change of email at ' + COMPANY_NAME,
@@ -96,7 +98,7 @@ exports.sendChangeEmailNotification = function(data,new_email){
         };
     }
     if(data.role == 'dentist'){
-        var email = {
+        email = {
             from:'GiveMeYourEmailPlease@gmail.com',
             to: new_email,
             subject: 'Change of email at ' + COMPANY_NAME,
@@ -119,8 +121,9 @@ exports.sendChangePhoneNumberNotification = function(account,new_phone_number){
 };
 
 exports.sendRemovedAccountNotification = function(removed_account){
+    var email;
     if(removed_account.role == 'client'){
-        var email = {
+        email = {
             from:'GiveMeYourEmailPlease@gmail.com',
             to: removed_account.account_info.email,
             subject: 'Goodbye from ' + COMPANY_NAME,
@@ -131,7 +134,7 @@ exports.sendRemovedAccountNotification = function(removed_account){
         };
     }
     if(removed_account.role == 'dentist'){
-        var email = {
+        email = {
             from:'GiveMeYourEmailPlease@gmail.com',
             to: removed_account.account_info.email,
             subject: COMPANY_NAME + '. Termination of employment ',
