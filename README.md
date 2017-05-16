@@ -23,5 +23,12 @@ When the installation is completed the server can be launched by typing the foll
 When the server is running it can be accessed by navigating to **http://localhost:3000** using a
 browser.
 
+The first time the system is launched, an administrator account is created. 
+
+Username: **administrator**
+
+Password: **administrator**
+
+The password can later be changed.
 
 Testing module can be launched by typing **mocha** in the command line.
