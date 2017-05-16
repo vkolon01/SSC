@@ -18,6 +18,7 @@ var Account_Schema = new mongoose.Schema({
 });
 Account_Model = mongoose.model('login_data', Account_Schema);
 
+
 exports.check_username_availability = function(username){
     return new Promise(function(fulfill,reject){
         Account_Model.findOne({'username':username},function(err,user){
@@ -59,7 +60,16 @@ exports.create_account = function(form){
     });
 };
 
-exports.login = function(form){
+exports.change_password = function(form){
+    return new Promise(function(fulfill,reject){
+        Account_Model.findOneAndUpdate({'username':form.username},{$set:{'hash':form.hash}},function(err,user){
+            if(err) reject(err);
+            fulfill('Update is successful');
+        });
+    })
+};
+
+exports.authorize = function(form){
     return new Promise(function(fulfill,reject){
         Account_Model.findOne({'username':form.username},function(err,user){
             if(err) console.error(err);
@@ -85,6 +95,18 @@ exports.delete_by_username = function(username){
             if(err) reject(err);
             if(user){
                 fulfill();
+            }
+        })
+    })
+};
+
+exports.check_collection = function(){
+    return new Promise(function(fulfill){
+        Account_Model.find(function(err,collection){
+            if(collection.length > 0) {
+                fulfill(true)
+            }else{
+                fulfill(false)
             }
         })
     })

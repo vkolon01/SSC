@@ -56,7 +56,6 @@ router.route('/registration')
 
 router.get('/:dentist_id',function(req,res){
     var permission = accessHandler.ac.can(userRole).readAny('dentist');
-    console.log(userRole);
     if (permission.granted){
         dataController.find_dentist(req.params.dentist_id).then(function(data){
             var dentist_data = {
@@ -119,6 +118,7 @@ router.get('/',function(req,res){
 
 router.post('/delete',function(req,res){
     var permission = accessHandler.ac.can(userRole).deleteAny('dentist');
+
     if(permission.granted){
         dataController.delete_dentist(req.body.dentist_id).then(function(removed_account){
             email_handler.sendRemovedAccountNotification(removed_account);
@@ -129,14 +129,14 @@ router.post('/delete',function(req,res){
                        dataController.find_client(appointment.client_id).then(function(client){
                            email_handler.sendDentistCanceledAppointmentNotification({client:client, dentist: removed_account});
                        },function(err){
-                           console.log(err);
+                           console.error(err);
                        });
                    });
                }
             });
             res.redirect('/dentist');
         },function(err){
-            console.log(err);
+            console.error(err);
             res.redirect('/dentist/'+req.body.dentist_id);
         })
     }else{
@@ -155,12 +155,12 @@ router.post('/edit/phone_number',function(req,res){
             form_validation.validate_phone_number(phone_number).then(function(data){dataController.edit_dentist_phone_number(data,id).then(function(data){
                     res.redirect('/dentist/'+id);
                 },function(err){
-                    console.log(err);
+                    console.error(err);
                     //req.session.errors.push(err);
                     res.redirect('/dentist/'+id);
                 })},
                 function(err){
-                    console.log(err);
+                    console.error(err);
                     //req.session.push(err);
                     res.redirect('/dentist/'+id);
                 })
@@ -179,12 +179,12 @@ router.post('/edit/email',function(req,res){
             form_validation.validate_email(email).then(function(data){dataController.edit_dentist_email(data,id).then(function(data){
                     res.redirect('/dentist/'+id);
                 },function(err){
-                    console.log(err);
+                    console.error(err);
                     //req.session.errors.push(err);
                     res.redirect('/dentist/'+id);
                 })},
                 function(err){
-                    console.log(err);
+                    console.error(err);
                     //req.session.push(err);
                     res.redirect('/dentist/'+id);
                 })

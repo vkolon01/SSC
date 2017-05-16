@@ -142,12 +142,12 @@ router.post('/edit/phone_number',function(req,res){
             form_validation.validate_phone_number(phone_number).then(function(data){dataController.edit_client_phone_number(data,client_id).then(function(data){
                     res.redirect('/clients/'+client_id);
                 },function(err){
-                    console.log(err);
+                    console.error(err);
                     //req.session.errors.push(err);
                     res.redirect('/clients/'+client_id);
                 })},
                 function(err){
-                    console.log(err);
+                    console.error(err);
                     //req.session.push(err);
                     res.redirect('/clients/'+client_id);
                 })
@@ -167,12 +167,12 @@ router.post('/edit/email',function(req,res){
             form_validation.validate_email(email).then(function(data){dataController.edit_client_email(data,client_id).then(function(data){
                     res.redirect('/clients/'+client_id);
                 },function(err){
-                    console.log(err);
+                    console.error(err);
                     //req.session.errors.push(err);
                     res.redirect('/clients/'+client_id);
                 })},
                 function(err){
-                    console.log(err);
+                    console.error(err);
                     //req.session.push(err);
                     res.redirect('/clients/'+client_id);
                 })
@@ -194,14 +194,14 @@ router.post('/delete',function(req,res){
                         dataController.find_dentist(appointment.dentist_id).then(function(dentist){
                             email_handler.sendDentistCanceledAppointmentNotification({client:removed_account, dentist: dentist}); //notifies the dentist about the canceled appointment
                         },function(err){
-                            console.log(err);
+                            console.error(err);
                         });
                     });
                 }
             });
             res.redirect('/clients');
         },function(err){
-            console.log(err);
+            console.error(err);
             res.redirect('/clients/'+client_id);
         })
     }else{

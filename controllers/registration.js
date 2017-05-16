@@ -2,7 +2,33 @@ var express = require('express'),
     router = express.Router(),
     dataController = require('../models/dataController'),
     form_validation = require('./app_routes/handlers/form_validation'),
-    accessHandler = require('./app_routes/handlers/roles');
+    accessHandler = require('./app_routes/handlers/roles'),
+    userRole;
+
+router.use(function(req,res,next){
+    userRole = res.locals.userRole;
+    next();
+});
+
+dataController.check_collection().then(function(result){
+    if(!result){
+        var administrator = {
+            name : "Initial account",
+            username : "administrator",
+            phone_number : "123456789",
+            email : "administrator@someemail.com",
+            date_of_birth : new Date,
+            role : "admin",
+            password: "administrator",
+            password_confirm: "administrator",
+            hash: '',
+            gender: "female"
+        };
+        form_validation.validate_staff_form(administrator).then(function(form){
+            dataController.create_staff_account(form);
+        });
+    }
+});
 
 router.get('/',function(req,res){
     var userRole = res.locals.userRole;
@@ -19,6 +45,50 @@ router.get('/',function(req,res){
         res.status(403).send(accessHandler.errors.read_page).end();
     }
 });
+
+router.route('/change_password')
+    .all(function(req,res,next){
+        var permission = accessHandler.ac.can(userRole).updateOwn('password');
+        if(permission.granted) {
+            next();
+        }else{
+            res.status(403).send(accessHandler.errors.read_page).end();
+        }
+    })
+    .get(function(req,res){
+        res.render('change_password',{
+            pageTitle: "Change password",
+            siteName: res.locals.siteTitle,
+            errors: req.session.errors,
+            user: req.session.user,
+            role: req.session.role
+        });
+    })
+    .post(function(req,res){
+        var form = {
+            password: req.body.old_password,
+            new_password: req.body.new_password,
+            new_password_confirm: req.body.new_password_confirm,
+            username: req.session.user,
+            hash: ''
+        };
+        form_validation.validate_password(form).then(function(hash){
+            form.hash = hash;
+            dataController.authorize(form).then(function(user){
+                dataController.change_password(form).then(function(message){
+                    console.log(message);
+                    res.redirect('/');
+                })
+            },function(err){
+                console.error(err);
+                res.redirect('/change_password');
+            })
+        },function(err){
+            console.error(err);
+            res.redirect('/change_password');
+        })
+    });
+
 
 router.post('/submit',function(req,res){
     var userRole = res.locals.userRole;

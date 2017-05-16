@@ -6,11 +6,14 @@ var express = require('express'),
     moment = require('moment'),
     dataController = require('../../../models/dataController');
 
+
+const   MIN_PASSWORD_LENGTH = 8,
+        MIN_DENTIST_AGE = 18,
+        MIN_NAME_LENGTH = 3,
+        MAX_NAME_LENGTH = 50,
+        MIN_CLIENT_AGE = 5;
 exports.validate_dentist_form = function(form){
     return new Promise(function (fulfill, reject) {
-        const MIN_DENTIST_AGE = 18,
-            MIN_NAME_LENGTH = 3,
-            MAX_NAME_LENGTH = 50;
 
         var nameOptions = {min: MIN_NAME_LENGTH, max: MAX_NAME_LENGTH},
             errors = [];
@@ -34,10 +37,6 @@ exports.validate_dentist_form = function(form){
 
 exports.validate_client_form = function(form) {
     return new Promise(function (fulfill, reject) {
-        const MIN_CLIENT_AGE = 5,
-            MIN_NAME_LENGTH = 3,
-            MAX_NAME_LENGTH = 50;
-
         var nameOptions = {min: MIN_NAME_LENGTH, max: MAX_NAME_LENGTH},
             errors = [];
         if (!validator.isAlpha(form.name.replace(' ', ''))) {
@@ -80,6 +79,23 @@ exports.validate_email = function(email){
     });
 };
 
+exports.validate_password = function(form){
+   return new Promise(function(fulfill,reject){
+       if(validator.matches(form.new_password,form.new_password_confirm)) {
+           if(form.new_password.length >= MIN_PASSWORD_LENGTH){
+               crypt(form.new_password).hash(function (err, hashed_password) {
+                   if (err) reject(err);
+                   fulfill(hashed_password);
+               });
+           }else{
+               reject('The password must be at least ' + MIN_PASSWORD_LENGTH + ' long');
+           }
+       }else{
+           reject('The password does not match the confirmation password');
+       }
+   });
+};
+
 exports.validate_staff_form = function(form){
     var errors = [];
     return new Promise(function (fulfill,reject){
@@ -90,16 +106,23 @@ exports.validate_staff_form = function(form){
         async.parallel([
             function(callback){
                 if(validator.matches(form.password,form.password_confirm)) {
-                    crypt(form.password).hash(function (err, hashed_password) {
-                        if (err) reject(err);
-                        form.hash = hashed_password;
+                    if(form.password.length >= MIN_PASSWORD_LENGTH){
+                        crypt(form.password).hash(function (err, hashed_password) {
+                            if (err) reject(err);
+                            form.hash = hashed_password;
+                            callback();
+                        });
+                    }else{
+                        errors.push('Please make sure the password length is at least ' + MIN_PASSWORD_LENGTH + ' long');
                         callback();
-                    });
+                    }
                 }else{
-                    errors.push('The confirmation password does not match');
+                    errors.push('The password does not match the confirmation password');
+                    callback();
                 }
             },
             function(callback){
+
                 var counter = 0;
                 if(!validator.isAlpha(form.name.replace(' ',''))){errors.push('Please enter a valid name')}
                 if(!validator.isLength(form.name,nameOptions)){errors.push('The name must be between 3 and 50 characters.')}

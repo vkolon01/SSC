@@ -8,7 +8,7 @@ const TIME_SLOT = [0,15,30,45]; //minutes
 var notifier = new schedule.RecurrenceRule(),
     eliminator = new schedule.RecurrenceRule();
 
-eliminator.second = TIME_SLOT;
+eliminator.minute = TIME_SLOT;
 
 /*
 Sends notifications at the set delivery time.

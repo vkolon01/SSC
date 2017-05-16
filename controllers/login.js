@@ -20,7 +20,7 @@ router.route('/')
 
     })
     .post(function(req,res){
-        accountController.login({
+        accountController.authorize({
             username: req.body.username,
             password: req.body.password
         }).then(function(data){

@@ -31,7 +31,6 @@ exports.create_settings_file = function(){
 
                 });
                 file.save(function(err,file){
-                    console.log(file);
                     if(err)reject();
                     if(file)fulfill;
                 })

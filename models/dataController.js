@@ -20,9 +20,11 @@ exports.delete_client = function(client_id){return client_data.delete_client(cli
 //staff_data
 exports.delete_by_username = function(username){return staff_data.delete_by_username(username)};
 exports.create_staff_account = function(form){return staff_data.create_account(form)};
-exports.login =function(form){return staff_data.login(form)};
+exports.authorize =function(form){return staff_data.authorize(form)};
 exports.check_username_availability = function(username){return staff_data.check_username_availability(username)};
 exports.check_staff_email_availability = function(email){return staff_data.check_email_availability(email)};
+exports.check_collection = function(){return staff_data.check_collection()};
+exports.change_password = function(form){return staff_data.change_password(form)};
 
 //dentist_data
 exports.create_dentist_account = function(form){return dentist_data.create_account(form)};

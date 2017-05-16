@@ -13,6 +13,4 @@ exports.register = function(form){
             reject(err)
         });
     });
-
 };
-

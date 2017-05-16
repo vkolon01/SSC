@@ -21,9 +21,7 @@ var Client_Model = mongoose.model('client_account',Client_Schema);
 
 //exported functions that are called by the accountController
 exports.create_account = function(form){
-    console.log(shortid.generate());
     return new Promise(function(fulfill,reject){
-
         Client_Model.find({'account_info.email':form.email},function(err,result){
             if(result.length > 0){
                 reject('The email is already in use');

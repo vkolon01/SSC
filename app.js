@@ -6,21 +6,21 @@ var bodyParser = require('body-parser');
 var config = require('./config');
 var reload = require('reload');
 var session = require('express-session');
-var port = 3001;
+var port = 3000;
 var app = express();
 var validator = require('express-validator');
 
 //database connection
-var mongoose = require('mongoose'),
-    mongoBase = require('connect-mongo')(session);
+var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
+var mongoBase = require('connect-mongo')(session);
 mongoose.connect('mongodb://localhost/SSC');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(logger('dev'));
+//app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(validator());
